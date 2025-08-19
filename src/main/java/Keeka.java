@@ -26,6 +26,8 @@ public class Keeka {
     public static void inputHandler() {
 
         Scanner scanner = new Scanner(System.in);
+        boolean isTask = false;
+        boolean isMark = false;
         String userInput = "";
         ArrayList<Task> taskList = new ArrayList<>();
         userInput = scanner.nextLine();
@@ -39,28 +41,98 @@ public class Keeka {
             }
 
             try {
-                String[] markingArray = userInput.split(" ");
-                String isMarkString = markingArray[0];
-                int indexNumber = Integer.parseInt(markingArray[1]);
 
-                if (Objects.equals(isMarkString, "mark")) {
-                    listMarker(taskList, indexNumber);
+                isTask = taskInterpreter(userInput, taskList);
+                isMark = markingInterpreter(userInput, taskList);
+
+                if (!isTask && !isMark) {
+                    throw new Exception("Invalid command!");
                 }
 
-                if (Objects.equals(isMarkString, "unmark")) {
-                    listUnmarker(taskList, indexNumber);
-                }
-
-            } catch (Exception e){
-                Task newTask = new Task(userInput, false);
-                taskList.add(newTask);
+            } catch (Exception e) {
                 System.out.println("_________________________________________________");
-                System.out.println("Task successfully added: " + newTask.getDescription());
+                System.out.println(e.getMessage());
                 System.out.println("_________________________________________________");
-            } finally {
+            }  finally {
                 userInput = scanner.nextLine();
             }
+        }
+    }
 
+    public static boolean taskInterpreter(String userInput, ArrayList<Task> taskList) throws InvalidTaskException {
+
+        try {
+            String[] parsedInput = userInput.split(" ", 2);
+            String firstElement = parsedInput[0];
+            String description = parsedInput[1];
+
+            if (Objects.equals(firstElement, "todo") || (Objects.equals(firstElement, "deadline")) || (Objects.equals(firstElement, "event"))) {
+
+                switch (firstElement) {
+                    case "todo" -> {
+                        ToDo newToDo = new ToDo(description, false);
+                        taskList.add(newToDo);
+                    }
+                    case "deadline" -> {
+                        String[] parsedDescription = description.split(" /by ");
+                        String deadlineDescription = parsedDescription[0];
+                        String deadlineDate = parsedDescription[1];
+                        Deadline newDeadline = new Deadline(deadlineDescription, false, deadlineDate);
+                        taskList.add(newDeadline);
+                    }
+                    case "event" -> {
+                        String[] parsedDescription = description.split(" /from ");
+                        String eventDescription = parsedDescription[0];
+                        String[] parsedDuration = parsedDescription[1].split(" /to ");
+                        String eventStart = parsedDuration[0];
+                        String eventEnd = parsedDuration[1];
+                        Event newEvent = new Event(eventDescription, false, eventStart, eventEnd);
+                        taskList.add(newEvent);
+                    }
+                }
+                successfulTaskAddPrinter(taskList);
+                return true;
+            } else {
+                return false;
+            }
+
+        } catch (Exception e) {
+            return false;
+        }
+
+    }
+
+    public static void successfulTaskAddPrinter(ArrayList<Task> taskList) {
+        System.out.println("_________________________________________________");
+        System.out.println("Task successfully added: ");
+        System.out.println(taskList.get(taskList.size() - 1));
+        System.out.println("Task counter: " + taskList.size());
+        System.out.println("_________________________________________________");
+    }
+
+    public static boolean markingInterpreter(String userInput, ArrayList<Task> taskList) throws InvalidMarkingException {
+
+        try {
+            String[] markingArray = userInput.split(" ");
+            String isMarkString = markingArray[0];
+            int indexNumber = Integer.parseInt(markingArray[1]);
+
+            if ((Objects.equals(isMarkString, "mark")) || (Objects.equals(isMarkString, "unmark"))) {
+                switch (isMarkString) {
+                    case "mark" -> {
+                        listMarker(taskList, indexNumber);
+                    }
+                    case "unmark" -> {
+                        listUnmarker(taskList, indexNumber);
+                    }
+                }
+                return true;
+            } else {
+                return false;
+            }
+
+        } catch (Exception e) {
+            return false;
         }
 
     }
@@ -108,6 +180,7 @@ public class Keeka {
 
     }
 
+    // Unmarks items in list, updates status in list
     private static void listUnmarker(ArrayList<Task> taskList, int index) {
 
         if (index < 1 || index > taskList.size()) {
@@ -127,6 +200,5 @@ public class Keeka {
         System.out.println("_________________________________________________");
 
     }
-
 }
 
