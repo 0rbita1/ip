@@ -8,18 +8,9 @@ public class Keeka {
 
         String name = "Keeka";
 
-        // Greeting
-        System.out.println("_________________________________________________");
-        System.out.println("Hello! I'm " + name);
-        System.out.println("What can I do for you?");
-        System.out.println("_________________________________________________");
-
+        messageWrapper("Hello! I'm " + name + "\n" + "What can I do for you?");
         inputHandler();
-
-        // Exit
-        System.out.println("_________________________________________________");
-        System.out.println("Bye. Hope to see you again soon!");
-        System.out.println("_________________________________________________");
+        messageWrapper("Bye. Hope to see you again soon!");
     }
 
     // Attempts to parse first word to call the appropriate method
@@ -54,9 +45,7 @@ public class Keeka {
                 }
 
             } catch (Exception e) {
-                System.out.println("_________________________________________________");
-                System.out.println(e.getMessage());
-                System.out.println("_________________________________________________");
+                messageWrapper(e.getMessage());
             }  finally {
                 userInput = scanner.nextLine();
             }
@@ -103,11 +92,7 @@ public class Keeka {
 
 
     private static void successfulTaskAddPrinter(ArrayList<Task> taskList) {
-        System.out.println("_________________________________________________");
-        System.out.println("Task successfully added:");
-        System.out.println(taskList.get(taskList.size() - 1));
-        System.out.println("Task counter: " + taskList.size());
-        System.out.println("_________________________________________________");
+        messageWrapper("Task successfully added:\n" + taskList.get(taskList.size() - 1) + "\n" + "Task counter: " + taskList.size());
     }
 
     // Parses first word to determine which marking method to call
@@ -145,29 +130,21 @@ public class Keeka {
     // Deletes item at specified index (1-indexed)
     private static void listDeleter(ArrayList<Task> taskList, int index) {
         if (index < 1 || index > taskList.size()) {
-            System.out.println("_________________________________________________");
-            System.out.println("Invalid index number! Use an integer within the range of the size of the list");
-            System.out.println("_________________________________________________");
+            messageWrapper("Invalid index number! Use an integer within the range of the size of the list");
             return;
         }
 
         Task desiredTask = taskList.get(index - 1);
-        taskList.remove(index);
+        taskList.remove(index - 1);
 
-        System.out.println("_________________________________________________");
-        System.out.println("Task successfully deleted:");
-        System.out.println(desiredTask);
-        System.out.println("Task counter: " + taskList.size());
-        System.out.println("_________________________________________________");
+        messageWrapper("Task successfully deleted:\n" + desiredTask + "\n" + "Task counter: " + taskList.size());
     }
 
     // Text list printer
     private static void listPrinter(ArrayList<Task> taskList) {
 
         if (taskList.isEmpty()) {
-            System.out.println("_________________________________________________");
-            System.out.println("List is empty! Add tasks to display");
-            System.out.println("_________________________________________________");
+            messageWrapper("List is empty! Add tasks to display");
             return;
         }
 
@@ -186,9 +163,7 @@ public class Keeka {
     private static void listMarker(ArrayList<Task> taskList, int index) {
 
         if (index < 1 || index > taskList.size()) {
-            System.out.println("_________________________________________________");
-            System.out.println("Invalid index number! Use an integer within the range of the size of the list");
-            System.out.println("_________________________________________________");
+            messageWrapper("Invalid index number! Use an integer within the range of the size of the list");
             return;
         }
 
@@ -196,19 +171,14 @@ public class Keeka {
         desiredTask.setDone();
         taskList.set(index - 1, desiredTask);
 
-        System.out.println("_________________________________________________");
-        System.out.println("Task successfully marked as done:");
-        System.out.println(desiredTask);
-        System.out.println("_________________________________________________");
+        messageWrapper("Task successfully marked as done:\n" + desiredTask);
     }
 
     // Unmarks items in list, updates status in list
     private static void listUnmarker(ArrayList<Task> taskList, int index) {
 
         if (index < 1 || index > taskList.size()) {
-            System.out.println("_________________________________________________");
-            System.out.println("Invalid index number! Use an integer within the range of the size of the list");
-            System.out.println("_________________________________________________");
+            messageWrapper("Invalid index number! Use an integer within the range of the size of the list");
             return;
         }
 
@@ -216,9 +186,12 @@ public class Keeka {
         desiredTask.setNotDone();
         taskList.set(index - 1, desiredTask);
 
+        messageWrapper("Task successfully marked as NOT done:\n" + desiredTask);
+    }
+
+    private static void messageWrapper(String message) {
         System.out.println("_________________________________________________");
-        System.out.println("Task successfully marked as NOT done:");
-        System.out.println(desiredTask);
+        System.out.println(message);
         System.out.println("_________________________________________________");
     }
 }
