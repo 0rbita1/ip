@@ -104,7 +104,7 @@ public class Keeka {
 
     private static void successfulTaskAddPrinter(ArrayList<Task> taskList) {
         System.out.println("_________________________________________________");
-        System.out.println("Task successfully added: ");
+        System.out.println("Task successfully added:");
         System.out.println(taskList.get(taskList.size() - 1));
         System.out.println("Task counter: " + taskList.size());
         System.out.println("_________________________________________________");
