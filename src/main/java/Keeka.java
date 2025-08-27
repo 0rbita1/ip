@@ -1,4 +1,5 @@
-
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -7,13 +8,14 @@ import java.util.Scanner;
 
 
 public class Keeka {
+    final static String NAME = "Keeka";
+    final static String SAVE_FILE_PATH = "src/main/java/TaskList.txt";
 
     public static void main(String[] args) {
-        final String NAME = "Keeka";
         ArrayList<Task> tasks = new ArrayList<>();
 
         try {
-            retrieveSaveContents("src/main/java/TaskList.txt", tasks);
+            retrieveSaveContents(tasks);
             printMessage("Hello! I'm " + NAME + "\n" + "What can I do for you?");
             handleInputs(tasks);
             printMessage("Bye. Hope to see you again soon!");
@@ -23,8 +25,8 @@ public class Keeka {
 
     }
 
-    private static void retrieveSaveContents(String filePath, ArrayList<Task> tasks) throws FileNotFoundException {
-        File f = new File(filePath);
+    private static void retrieveSaveContents(ArrayList<Task> tasks) throws FileNotFoundException {
+        File f = new File(SAVE_FILE_PATH);
         Scanner s = new Scanner(f);
 
         while (s.hasNext()) {
@@ -50,16 +52,17 @@ public class Keeka {
             tasks) {
         boolean isMarked = markedStatus == 'X';
 
-        switch(taskCode) {
+
+        switch (taskCode) {
         case 'T' -> {
-            addToDo(taskContent, isMarked, tasks);
+            loadToDo(taskContent, isMarked, tasks);
         }
         case 'D' -> {
             String[] descriptionDateSplit = taskContent.split(" \\(by: ", 2);
             String description = descriptionDateSplit[0];
             String date = descriptionDateSplit[1];
             date = date.substring(0, date.length() - 1);
-            addDeadline(description, isMarked, date, tasks);
+            loadDeadline(description, isMarked, date, tasks);
         }
         case 'E' -> {
             String[] descriptionDurationSplit = taskContent.split(" \\(from: ", 2);
@@ -68,9 +71,10 @@ public class Keeka {
             String eventStart = durationSplit[0];
             String eventEnd = durationSplit[1];
             eventEnd = eventEnd.substring(0, eventEnd.length() - 1);
-            addEvent(description, isMarked, eventStart, eventEnd, tasks);
+            loadEvent(description, isMarked, eventStart, eventEnd, tasks);
         }
         }
+
     }
 
     private static void handleInputs(ArrayList<Task> tasks) {
@@ -140,19 +144,58 @@ public class Keeka {
         }
     }
 
-    private static void addToDo(String description, Boolean isDone, ArrayList<Task> tasks) {
+    private static void addToDo(String description, Boolean isDone, ArrayList<Task> tasks)
+            throws IOException {
+        ToDo newToDo = new ToDo(description, isDone);
+        tasks.add(newToDo);
+        addTaskToSave(newToDo, tasks);
+    }
+
+    private static void addDeadline(String description, Boolean isDone, String date, ArrayList<Task> tasks)
+            throws IOException {
+        Deadline newDeadline = new Deadline(description, isDone, date);
+        tasks.add(newDeadline);
+        addTaskToSave(newDeadline, tasks);
+    }
+
+    private static void addEvent(String description, Boolean isDone, String start, String end, ArrayList<Task> tasks)
+            throws IOException {
+        Event newEvent = new Event(description, isDone, start, end);
+        tasks.add(newEvent);
+        addTaskToSave(newEvent, tasks);
+    }
+
+    private static void loadToDo(String description, Boolean isDone, ArrayList<Task> tasks) {
         ToDo newToDo = new ToDo(description, isDone);
         tasks.add(newToDo);
     }
 
-    private static void addDeadline(String description, Boolean isDone, String date, ArrayList<Task> tasks) {
-        Deadline newDeadline = new Deadline(description, false, date);
+    private static void loadDeadline(String description, Boolean isDone, String date, ArrayList<Task> tasks)  {
+        Deadline newDeadline = new Deadline(description, isDone, date);
         tasks.add(newDeadline);
     }
 
-    private static void addEvent(String description, Boolean isDone, String start, String end, ArrayList<Task> tasks) {
+    private static void loadEvent(String description, Boolean isDone, String start, String end, ArrayList<Task> tasks) {
         Event newEvent = new Event(description, isDone, start, end);
         tasks.add(newEvent);
+    }
+
+    private static void addTaskToSave(Task task, ArrayList<Task> tasks ) throws IOException {
+        String saveText = tasks.size() + ". " + task.toString() + "\n";
+        FileWriter fw = new FileWriter(SAVE_FILE_PATH, true);
+        fw.write(saveText);
+        fw.close();
+    }
+
+    private static void updateTaskInSave(ArrayList<Task> tasks) throws IOException {
+        FileWriter fw = new FileWriter(SAVE_FILE_PATH, false);
+
+        for (int i = 0; i < tasks.size(); i++) {
+            String saveText = (i + 1) + ". " + tasks.get(i).toString() + "\n";
+            fw.write(saveText);
+        }
+
+        fw.close();
     }
 
     private static void interpretMark(String input, ArrayList<Task> tasks) throws InvalidMarkingException {
@@ -171,7 +214,7 @@ public class Keeka {
         }
     }
 
-    private static void markTask(ArrayList<Task> tasks, int index) {
+    private static void markTask(ArrayList<Task> tasks, int index) throws IOException {
         if (index < 1 || index > tasks.size()) {
             printMessage("Invalid index number! Use an integer within the range of the size of the list");
             return;
@@ -181,9 +224,10 @@ public class Keeka {
         desiredTask.setDone();
         tasks.set(index - 1, desiredTask);
         printMessage("Task successfully marked as done:\n" + desiredTask);
+        updateTaskInSave(tasks);
     }
 
-    private static void unmarkTask(ArrayList<Task> tasks, int index) {
+    private static void unmarkTask(ArrayList<Task> tasks, int index) throws IOException {
         if (index < 1 || index > tasks.size()) {
             printMessage("Invalid index number! Use an integer within the range of the size of the list");
             return;
@@ -193,6 +237,7 @@ public class Keeka {
         desiredTask.setNotDone();
         tasks.set(index - 1, desiredTask);
         printMessage("Task successfully marked as NOT done:\n" + desiredTask);
+        updateTaskInSave(tasks);
     }
 
     private static void interpretDelete(String input, ArrayList<Task> tasks) throws Exception {
@@ -207,7 +252,7 @@ public class Keeka {
         }
     }
 
-    private static void deleteTask(ArrayList<Task> tasks, int index) {
+    private static void deleteTask(ArrayList<Task> tasks, int index) throws IOException {
         if (index < 1 || index > tasks.size()) {
             printMessage("Invalid index number! Use an integer within the range of the size of the list");
             return;
@@ -216,6 +261,7 @@ public class Keeka {
         Task desiredTask = tasks.get(index - 1);
         tasks.remove(index - 1);
         printMessage("Task successfully deleted:\n" + desiredTask + "\n" + "Task counter: " + tasks.size());
+        updateTaskInSave(tasks);
     }
 
     private static void printSuccessfulTaskAddition(ArrayList<Task> taskList) {
