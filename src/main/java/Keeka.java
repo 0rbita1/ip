@@ -1,8 +1,11 @@
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Scanner;
 
@@ -58,21 +61,54 @@ public class Keeka {
             loadToDo(taskContent, isMarked, tasks);
         }
         case 'D' -> {
-            String[] descriptionDateSplit = taskContent.split(" \\(by: ", 2);
-            String description = descriptionDateSplit[0];
-            String date = descriptionDateSplit[1];
-            date = date.substring(0, date.length() - 1);
-            loadDeadline(description, isMarked, date, tasks);
+            interpretDeadlineSave(taskContent, tasks);
         }
         case 'E' -> {
-            String[] descriptionDurationSplit = taskContent.split(" \\(from: ", 2);
-            String description = descriptionDurationSplit[0];
-            String[] durationSplit = descriptionDurationSplit[1].split(" to ", 2);
-            String eventStart = durationSplit[0];
-            String eventEnd = durationSplit[1];
-            eventEnd = eventEnd.substring(0, eventEnd.length() - 1);
-            loadEvent(description, isMarked, eventStart, eventEnd, tasks);
+            interpretEventSave(taskContent, tasks);
         }
+        }
+
+    }
+
+    private static void interpretDeadlineSave(String taskContent, ArrayList<Task> tasks) {
+        String[] descriptionDateSplit = taskContent.split(" \\(by: ", 2);
+        String description = descriptionDateSplit[0];
+        String dateString = descriptionDateSplit[1].substring(0, descriptionDateSplit[1].length() - 1);
+
+        try {
+            if (dateString.contains("T")) {
+                LocalDateTime deadlineDateTime = LocalDateTime.parse(dateString);
+                loadDeadline(dateString, false, deadlineDateTime, tasks);
+            } else {
+                LocalDate deadlineDate = LocalDate.parse(dateString);
+                loadDeadline(dateString, false, deadlineDate, tasks);
+            }
+        } catch (DateTimeParseException e) {
+            System.out.println("Invalid date format for deadline input! " + e);
+            System.out.println("Deadline date format as follows: YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS");
+        }
+    }
+
+    private static void interpretEventSave(String taskContent, ArrayList<Task> tasks) {
+        String[] descriptionDurationSplit = taskContent.split(" \\(from: ", 2);
+        String description = descriptionDurationSplit[0];
+        String[] durationSplit = descriptionDurationSplit[1].split(" to: ", 2);
+        String eventStartString = durationSplit[0];
+        String eventEndString = durationSplit[1].substring(0, durationSplit[1].length() - 1);
+
+        try {
+            if (eventStartString.contains("T") && eventEndString.contains("T")) {
+                LocalDateTime eventStart = LocalDateTime.parse(eventStartString);
+                LocalDateTime eventEnd = LocalDateTime.parse(eventEndString);
+                loadEvent(description, false, eventStart, eventEnd, tasks);
+            } else if (!eventStartString.contains("T") && !eventEndString.contains("T")) {
+                LocalDate eventStart = LocalDate.parse(eventStartString);
+                LocalDate eventEnd = LocalDate.parse(eventEndString);
+                loadEvent(description, false, eventStart, eventEnd, tasks);
+            }
+        } catch (DateTimeParseException e) {
+            System.out.println("Invalid date format for event input! " + e);
+            System.out.println("Event date format as follows: YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS");
         }
 
     }
@@ -116,31 +152,70 @@ public class Keeka {
     private static void interpretTask(String userInput, ArrayList<Task> tasks) throws InvalidTaskException {
         try {
             String[] parsedInput = userInput.split(" ", 2);
-            String firstElement = parsedInput[0];
-            String description = parsedInput[1];
+            String taskType = parsedInput[0];
+            String remainingContent = parsedInput[1];
 
-            switch (firstElement) {
+            switch (taskType) {
             case "todo" -> {
-                addToDo(description, false, tasks);
+                addToDo(remainingContent, false, tasks);
+                printSuccessfulTaskAddition(tasks);
             }
             case "deadline" -> {
-                String[] parsedDescription = description.split(" /by ");
-                String deadlineDescription = parsedDescription[0];
-                String deadlineDate = parsedDescription[1];
-                addDeadline(description, false, deadlineDate, tasks);
+                parseDeadlineInput(remainingContent, tasks);
+                printSuccessfulTaskAddition(tasks);
             }
             case "event" -> {
-                String[] parsedDescription = description.split(" /from ");
-                String eventDescription = parsedDescription[0];
-                String[] parsedDuration = parsedDescription[1].split(" /to ");
-                String eventStart = parsedDuration[0];
-                String eventEnd = parsedDuration[1];
-                addEvent(description, false, eventStart, eventEnd, tasks);
+                parseEventInput(remainingContent, tasks);
+                printSuccessfulTaskAddition(tasks);
             }
             }
-            printSuccessfulTaskAddition(tasks);
+
         } catch (Exception e) {
             throw new InvalidTaskException("Invalid task invocation!");
+        }
+    }
+
+    private static void parseDeadlineInput(String remainingContent, ArrayList<Task> tasks) throws
+            DateTimeParseException {
+        String[] parsedDescription = remainingContent.split(" /by ");
+        String deadlineDescription = parsedDescription[0];
+        String deadlineDateString = parsedDescription[1];
+
+        try {
+            if (deadlineDateString.contains("T")) {
+                LocalDateTime deadlineDateTime = LocalDateTime.parse(deadlineDateString);
+                addDeadline(deadlineDescription, false, deadlineDateTime, tasks);
+            } else {
+                LocalDate deadlineDate = LocalDate.parse(deadlineDateString);
+                addDeadline(deadlineDescription, false, deadlineDate, tasks);
+            }
+        } catch (DateTimeParseException | IOException e) {
+            System.out.println("Invalid date format for deadline input! " + e);
+            System.out.println("Deadline date format as follows: YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS");
+        }
+
+    }
+
+    private static void parseEventInput(String remainingContent, ArrayList<Task> tasks) throws DateTimeParseException {
+        String[] parsedDescription = remainingContent.split(" /from ");
+        String eventDescription = parsedDescription[0];
+        String[] parsedDuration = parsedDescription[1].split(" /to ");
+        String eventStartString = parsedDuration[0];
+        String eventEndString = parsedDuration[1];
+
+        try {
+            if (eventStartString.contains("T") && eventEndString.contains("T")) {
+                LocalDateTime eventStart = LocalDateTime.parse(eventStartString);
+                LocalDateTime eventEnd = LocalDateTime.parse(eventEndString);
+                addEvent(eventDescription, false, eventStart, eventEnd, tasks);
+            } else if (!eventStartString.contains("T") && !eventEndString.contains("T")) {
+                LocalDate eventStart = LocalDate.parse(eventStartString);
+                LocalDate eventEnd = LocalDate.parse(eventEndString);
+                addEvent(eventDescription, false, eventStart, eventEnd, tasks);
+            }
+        } catch (DateTimeParseException | IOException e) {
+            System.out.println("Invalid date format for event input! " + e);
+            System.out.println("Event date format as follows: YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS");
         }
     }
 
@@ -148,21 +223,35 @@ public class Keeka {
             throws IOException {
         ToDo newToDo = new ToDo(description, isDone);
         tasks.add(newToDo);
-        addTaskToSave(newToDo, tasks);
+        addToDoToSave(newToDo, tasks);
     }
 
-    private static void addDeadline(String description, Boolean isDone, String date, ArrayList<Task> tasks)
+    private static void addDeadline(String description, Boolean isDone, LocalDateTime date, ArrayList<Task> tasks)
             throws IOException {
         Deadline newDeadline = new Deadline(description, isDone, date);
         tasks.add(newDeadline);
-        addTaskToSave(newDeadline, tasks);
+        addDeadlineToSave(newDeadline, tasks);
     }
 
-    private static void addEvent(String description, Boolean isDone, String start, String end, ArrayList<Task> tasks)
+    private static void addDeadline(String description, Boolean isDone, LocalDate date, ArrayList<Task> tasks)
             throws IOException {
+        Deadline newDeadline = new Deadline(description, isDone, date);
+        tasks.add(newDeadline);
+        addDeadlineToSave(newDeadline, tasks);
+    }
+
+    private static void addEvent(String description, Boolean isDone, LocalDateTime start, LocalDateTime end,
+                                 ArrayList<Task> tasks) throws IOException {
         Event newEvent = new Event(description, isDone, start, end);
         tasks.add(newEvent);
-        addTaskToSave(newEvent, tasks);
+        addEventToSave(newEvent, tasks);
+    }
+
+    private static void addEvent(String description, Boolean isDone, LocalDate start, LocalDate end,
+                                 ArrayList<Task> tasks) throws IOException {
+        Event newEvent = new Event(description, isDone, start, end);
+        tasks.add(newEvent);
+        addEventToSave(newEvent, tasks);
     }
 
     private static void loadToDo(String description, Boolean isDone, ArrayList<Task> tasks) {
@@ -170,18 +259,44 @@ public class Keeka {
         tasks.add(newToDo);
     }
 
-    private static void loadDeadline(String description, Boolean isDone, String date, ArrayList<Task> tasks)  {
+    private static void loadDeadline(String description, Boolean isDone, LocalDateTime date, ArrayList<Task> tasks)  {
         Deadline newDeadline = new Deadline(description, isDone, date);
         tasks.add(newDeadline);
     }
 
-    private static void loadEvent(String description, Boolean isDone, String start, String end, ArrayList<Task> tasks) {
+    private static void loadDeadline(String description, Boolean isDone, LocalDate date, ArrayList<Task> tasks)  {
+        Deadline newDeadline = new Deadline(description, isDone, date);
+        tasks.add(newDeadline);
+    }
+
+    private static void loadEvent(String description, Boolean isDone, LocalDateTime start, LocalDateTime end,
+                                  ArrayList<Task> tasks) {
         Event newEvent = new Event(description, isDone, start, end);
         tasks.add(newEvent);
     }
 
-    private static void addTaskToSave(Task task, ArrayList<Task> tasks ) throws IOException {
+    private static void loadEvent(String description, Boolean isDone, LocalDate start, LocalDate end,
+                                  ArrayList<Task> tasks) {
+        Event newEvent = new Event(description, isDone, start, end);
+        tasks.add(newEvent);
+    }
+
+    private static void addToDoToSave(ToDo task, ArrayList<Task> tasks ) throws IOException {
         String saveText = tasks.size() + ". " + task.toString() + "\n";
+        FileWriter fw = new FileWriter(SAVE_FILE_PATH, true);
+        fw.write(saveText);
+        fw.close();
+    }
+
+    private static void addDeadlineToSave(Deadline deadline, ArrayList<Task> tasks ) throws IOException {
+        String saveText = tasks.size() + ". " + deadline.printInISO() + "\n";
+        FileWriter fw = new FileWriter(SAVE_FILE_PATH, true);
+        fw.write(saveText);
+        fw.close();
+    }
+
+    private static void addEventToSave(Event event, ArrayList<Task> tasks ) throws IOException {
+        String saveText = tasks.size() + ". " + event.printISO() + "\n";
         FileWriter fw = new FileWriter(SAVE_FILE_PATH, true);
         fw.write(saveText);
         fw.close();

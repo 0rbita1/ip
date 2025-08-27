@@ -1,0 +1,4 @@
+1. [D] [ ] something (by: 2025-08-08)
+2. [D] [ ] something (by: 2025-08-08T00:00)
+3. [E] [ ] something else (from: 2025-08-08 to: 2025-08-08)
+4. [E] [ ] something else (from: 2025-08-08T12:12:12 to: 2025-08-08T12:12:12)
