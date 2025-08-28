@@ -1,3 +1,5 @@
+package keeka;
+
 public class ParsedSaveContent {
     private char taskCode;
     private boolean isDone;

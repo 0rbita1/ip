@@ -1,7 +1,9 @@
+package keeka;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
+
 
 public class Deadline extends Task {
     LocalDate date;
@@ -22,7 +24,6 @@ public class Deadline extends Task {
         String by;
         if (date != null) {
             by = date.format(DateTimeFormatter.ofPattern("MMM dd yyyy"));
-            //by = date.toString();
         } else {
 
             by = dateTime.format(DateTimeFormatter.ofPattern("MMM dd yyyy"));

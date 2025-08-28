@@ -1,7 +1,8 @@
+package keeka;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 
 public class Event extends Task {
     LocalDate startDate;
@@ -29,8 +30,6 @@ public class Event extends Task {
         if (startDate != null && endDate != null) {
             from = startDate.format(DateTimeFormatter.ofPattern("MMM dd yyyy"));
             to = endDate.format(DateTimeFormatter.ofPattern("MMM dd yyyy"));
-            //from = startDate.toString();
-            //to = endDate.toString();
         } else {
             from = startDateTime.format(DateTimeFormatter.ofPattern("MMM dd yyyy"));
             to = endDateTime.format(DateTimeFormatter.ofPattern("MMM dd yyyy"));
