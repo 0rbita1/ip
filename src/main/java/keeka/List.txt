@@ -1,3 +1,5 @@
-1. [D] [ ] 2025-08-08 (by: Aug 08 2025)
-2. [E] [ ] something else (from: Aug 08 2025 to: Aug 08 2025)
-3. [E] [ ] something else (from: Aug 08 2025 to: Aug 08 2025)
+1. [T] [ ] something
+2. [D] [ ] something (by: 2025-08-08)
+3. [D] [ ] something (by: 2025-08-08T00:00)
+4. [E] [ ] something else (from: 2025-08-08 to: 2025-08-08)
+5. [E] [ ] something else (from: 2025-08-08T12:12:12 to: 2025-08-08T12:12:12)

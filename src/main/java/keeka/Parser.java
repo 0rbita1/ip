@@ -8,8 +8,8 @@ import java.util.ArrayList;
 
 public class Parser {
     final static int TASK_CODE_INDEX = 1;
-    final static int MARKED_STATUS_INDEX = 5;
-    final static int SUBSTRING_START_INDEX = 8;
+    final static int MARKED_STATUS_INDEX = 4;
+    final static int SUBSTRING_START_INDEX = 7;
 
     public Parser() {
 

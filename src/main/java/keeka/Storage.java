@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Storage {
-    final static String SAVE_FILE_PATH = "src/main/java/List.txt";
+    final static String SAVE_FILE_PATH = "src/main/java/keeka/List.txt";
     static File saveFile;
 
     public Storage() {
