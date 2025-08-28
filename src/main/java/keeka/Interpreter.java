@@ -79,6 +79,8 @@ public class Interpreter {
                     interpretMark(input, tasks);
                 } else if (Objects.equals(firstWord, "delete")) {
                     interpretDelete(input, tasks);
+                } else if (Objects.equals(firstWord, "find")) {
+                    interpretFind(input, tasks);
                 } else {
                     throw new Exception("Invalid command!");
                 }
@@ -137,12 +139,22 @@ public class Interpreter {
     private static void interpretDelete(String input, ArrayList<Task> tasks) throws Exception {
         try {
             String[] deletionArray = input.split(" ");
-            String deleteString = deletionArray[0];
             int indexNumber = Integer.parseInt(deletionArray[1]);
             TaskList.deleteTask(tasks, indexNumber);
 
         } catch (Exception e) {
             throw new Exception("Invalid deletion invocation!");
+        }
+    }
+
+    private static void interpretFind(String input, ArrayList<Task> tasks) throws Exception {
+        try {
+            String[] findQuerySplit = input.split(" ");
+            String query = findQuerySplit[1];
+            ArrayList<Task> queryResult = TaskList.findQuery(query, tasks);
+            Ui.printQueryList(queryResult);
+        } catch (Exception e) {
+            throw new Exception("Invalid find invocation!");
         }
     }
 }

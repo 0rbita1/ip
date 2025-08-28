@@ -27,6 +27,24 @@ public class Ui {
         printMessage(listText);
     }
 
+    public static void printQueryList(ArrayList<Task> tasks) {
+        if (tasks.isEmpty()) {
+            printMessage("Unable to find any matches for your query!");
+            return;
+        }
+
+        String listText = "Displaying items that match your query\n";
+
+        for (int i = 0; i < tasks.size(); i++) {
+            Task currentTask = tasks.get(i);
+            listText = listText.concat((i + 1) + ". " + currentTask.toString() + "\n");
+        }
+
+        printMessage(listText);
+    }
+
+
+
     public static void printGreeting() {
         printMessage("Hello! I'm Keeka\nWhat can I do for you?");
     }

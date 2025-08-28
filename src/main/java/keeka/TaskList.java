@@ -1,5 +1,6 @@
 package keeka;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -82,5 +83,23 @@ public class TaskList {
         Ui.printMessage("Task successfully deleted:\n" + desiredTask + "\n" + "Task counter: " + tasks.size());
         Storage.updateTaskInSave(tasks);
     }
+
+    public static ArrayList<Task> findQuery(String query, ArrayList<Task> tasks) {
+        ArrayList<Task> result = new ArrayList<>();
+
+        for (int i = 0; i < tasks.size(); i++) {
+            Task task = tasks.get(i);
+            String description = task.getDescription();
+
+            if (description.contains(query)) {
+                result.add(task);
+            }
+        }
+
+        return result;
+    }
+
+
+
 
 }
