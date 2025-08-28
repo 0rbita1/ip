@@ -1,4 +1,4 @@
-import java.io.File;
+/*import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -9,10 +9,9 @@ import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Scanner;
 
-
 public class Keeka {
     final static String NAME = "Keeka";
-    final static String SAVE_FILE_PATH = "src/main/java/TaskList.txt";
+    final static String SAVE_FILE_PATH = "src/main/java/List.txt";
 
     public static void main(String[] args) {
         ArrayList<Task> tasks = new ArrayList<>();
@@ -36,7 +35,6 @@ public class Keeka {
             String currentLine = s.nextLine();
             parseSaveContent(currentLine, tasks);
         }
-
     }
 
     private static void parseSaveContent(String content, ArrayList<Task> tasks) {
@@ -405,4 +403,66 @@ public class Keeka {
         System.out.println("_________________________________________________");
     }
 
+}
+*/
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.Objects;
+import java.util.Scanner;
+
+
+public class Keeka {
+    final static String NAME = "Keeka";
+    final static String SAVE_FILE_PATH = "src/main/java/List.txt";
+
+    public static void main(String[] args) {
+        ArrayList<Task> tasks = new ArrayList<>();
+        enum inputTypes {
+            TASK,
+            MARK,
+            DELETE
+        }
+
+
+        try {
+            ArrayList<String> saveContents = Storage.retrieveSaveContents();
+
+            for (int i = 0; i < saveContents.size(); i++) {
+                String saveContent = saveContents.get(i);
+                ParsedSaveContent parsedSaveContent = Parser.parseSaveContent(saveContent);
+
+                char taskCode = parsedSaveContent.getTaskCode();
+                boolean isDone = parsedSaveContent.getMarkedStatus();
+                String taskContent = parsedSaveContent.getTaskContent();
+
+                switch (taskCode) {
+                case 'T' -> {
+                    Storage.loadToDo(taskContent, isDone, tasks);
+                }
+                case 'D' -> {
+                    Interpreter.interpretAndLoadDeadlineSave(taskContent, isDone, tasks);
+                }
+                case 'E' -> {
+                    Interpreter.interpretAndLoadEventSave(taskContent, isDone, tasks);
+                }
+                }
+            }
+
+            Ui.printGreeting();
+
+            Interpreter.interpretInputs(tasks);
+
+            Ui.printBye();
+
+        } catch (FileNotFoundException e) {
+            System.out.println("File not found");
+        }
+    }
 }
