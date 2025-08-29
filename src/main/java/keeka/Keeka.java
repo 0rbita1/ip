@@ -15,7 +15,6 @@ public class Keeka {
             for (int i = 0; i < saveContents.size(); i++) {
                 String saveContent = saveContents.get(i);
                 ParsedSaveContent parsedSaveContent = Parser.parseSaveContent(saveContent);
-
                 char taskCode = parsedSaveContent.getTaskCode();
                 boolean isDone = parsedSaveContent.getMarkedStatus();
                 String taskContent = parsedSaveContent.getTaskContent();

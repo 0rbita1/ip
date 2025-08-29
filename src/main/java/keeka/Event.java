@@ -38,6 +38,13 @@ public class Event extends Task {
     }
 
 
+    /**
+     * Returns a string representation of the Event task in ISO format.
+     * This method constructs a string containing the object's superclass string representation,
+     *
+     * @return A string in the format "[E] [superclass string] (from: [date/datetime string] to:
+     * [date/datetime string])".
+     */
     public String printISO() {
         String from, to;
         if (startDate != null && endDate != null) {

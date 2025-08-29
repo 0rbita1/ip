@@ -13,9 +13,20 @@ public class Interpreter {
 
     }
 
+    /**
+     * Interprets the save content and calls the appropriate loadDeadline method depending on the format of the dateTime
+     * The method parses a string taskContent to extract the description and the deadline date/time.
+     * It supports two date formats: YYYY-MM-DD for a date only, and YYYY-MM-DDTHH:MM:SS for date with time
+     * If the parsing is successful, it calls Storage.loadDeadline to create and add the task.
+     * If the date string is in an invalid format, a DateTimeParseException is caught, and an error message is printed
+     * to the console.
+     *
+     * @param taskContent The string content of the task, expected to be in the format "description (by: date)".
+     * @param isDone      A boolean indicating whether the task is marked as done.
+     * @param tasks       The ArrayList to which the loaded task will be added.
+     */
     public static void interpretAndLoadDeadlineSave(String taskContent, Boolean isDone, ArrayList<Task> tasks) {
         String[] descriptionDateSplit = taskContent.split(" \\(by: ", 2);
-        String description = descriptionDateSplit[0];
         String dateString = descriptionDateSplit[1].substring(0, descriptionDateSplit[1].length() - 1);
 
         try {
@@ -32,6 +43,21 @@ public class Interpreter {
         }
     }
 
+    /**
+     * Interprets the save content and calls the appropriate loadEvent method depending on the format of the dateTime
+     * This method parses the taskContent string to extract the task description and the event's start and end dates or
+     * times.
+     * It handles two distinct date/time formats: YYYY-MM-DD for date-only events and YYYY-MM-DDTHH:MM:SS for events
+     * with specific times.
+     * If the parsing is successful, it calls Storage.loadEvent to create and add the task.
+     * If the date string is in an invalid format, a DateTimeParseException is caught, and an error message is printed
+     * to the console.
+     *
+     * @param taskContent The string content of the event, expected to be in the format "description (from: start_date
+     *                    to: end_date)".
+     * @param isDone      A boolean indicating whether the task is marked as done.
+     * @param tasks       The ArrayList to which the loaded task will be added.
+     */
     public static void interpretAndLoadEventSave(String taskContent, Boolean isDone, ArrayList<Task> tasks) {
         String[] descriptionDurationSplit = taskContent.split(" \\(from: ", 2);
         String description = descriptionDurationSplit[0];
@@ -56,6 +82,17 @@ public class Interpreter {
 
     }
 
+    /**
+     * Reads and interprets user commands from the console until the "bye" command is received.
+     * The method continuously reads a line of input from the user. It first checks for the "list" command to display
+     * the current tasks.
+     * For all other commands, it attempts to parse the input to determine the command type
+     * (e.g., todo, deadline, event, mark, unmark, delete, find).
+     * It then calls the appropriate helper method to process the command. If the command is not recognized, it throws
+     * an Exception which is caught and a relevant error message is printed.
+     *
+     * @param tasks The ArrayList of Task objects that the commands will operate on.
+     */
     public static void interpretInputs(ArrayList<Task> tasks) {
         Scanner s = new Scanner(System.in);
         String input = "";

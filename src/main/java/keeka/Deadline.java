@@ -1,8 +1,9 @@
 package keeka;
 
+import java.time.format.DateTimeFormatter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+
 
 
 public class Deadline extends Task {
@@ -25,12 +26,17 @@ public class Deadline extends Task {
         if (date != null) {
             by = date.format(DateTimeFormatter.ofPattern("MMM dd yyyy"));
         } else {
-
             by = dateTime.format(DateTimeFormatter.ofPattern("MMM dd yyyy"));
         }
         return "[D] " + super.toString() + " (by: " + by + ")";
     }
 
+    /**
+     * Returns a string representation of the Deadline task in ISO format.
+     * This method constructs a string containing the object's superclass string representation,
+     *
+     * @return A string in the format "[D] [superclass string] (by: [date/datetime string])".
+     */
     public String printInISO() {
         String by;
         if (date != null) {
