@@ -1,5 +1,10 @@
 package keeka;
 
+import tasks.Deadline;
+import tasks.Event;
+import tasks.Task;
+import tasks.ToDo;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -12,10 +17,35 @@ import java.util.Scanner;
 public class Storage {
     final static String SAVE_FILE_PATH = "src/main/java/keeka/List.txt";
     static File saveFile;
-
     public Storage() {
         saveFile = new File(SAVE_FILE_PATH);
     }
+
+
+    public static void loadSaveContents(ArrayList<Task> tasks) {
+        try {
+            ArrayList<String> saveContents = retrieveSaveContents();
+
+            for (int i = 0; i < saveContents.size(); i++) {
+                String saveContent = saveContents.get(i);
+
+                ParsedSaveContent parsedSaveContent = Parser.parseSaveContent(saveContent);
+                char taskCode = parsedSaveContent.getTaskCode();
+                boolean isDone = parsedSaveContent.getMarkedStatus();
+                String taskContent = parsedSaveContent.getTaskContent();
+
+                switch (taskCode) {
+                case 'T' -> loadToDo(taskContent, isDone, tasks);
+                case 'D' -> Interpreter.interpretAndLoadDeadlineSave(taskContent, isDone, tasks);
+                case 'E' -> Interpreter.interpretAndLoadEventSave(taskContent, isDone, tasks);
+                }
+            }
+
+        } catch (FileNotFoundException e) {
+            System.out.println("File not found! " + e);
+        }
+    }
+
 
     /**
      * Retrieves the contents of the save file and returns them as a list of strings.
@@ -157,7 +187,7 @@ public class Storage {
      * @throws IOException If an I/O error occurs while writing to the file.
      */
     public static void addDeadlineToSave(Deadline deadline, ArrayList<Task> tasks ) throws IOException {
-        String saveText = tasks.size() + ". " + deadline.printInISO() + "\n";
+        String saveText = tasks.size() + ". " + deadline.toString() + "\n";
         FileWriter fw = new FileWriter(SAVE_FILE_PATH, true);
         fw.write(saveText);
         fw.close();
@@ -174,7 +204,7 @@ public class Storage {
      * @throws IOException If an I/O error occurs while writing to the file.
      */
     public static void addEventToSave(Event event, ArrayList<Task> tasks ) throws IOException {
-        String saveText = tasks.size() + ". " + event.printISO() + "\n";
+        String saveText = tasks.size() + ". " + event.toString() + "\n";
         FileWriter fw = new FileWriter(SAVE_FILE_PATH, true);
         fw.write(saveText);
         fw.close();

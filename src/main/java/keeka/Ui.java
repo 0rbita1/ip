@@ -1,5 +1,7 @@
 package keeka;
 
+import tasks.Task;
+
 import java.util.ArrayList;
 
 public class Ui {
@@ -8,7 +10,8 @@ public class Ui {
     }
 
     public static void printSuccessfulTaskAddition(ArrayList<Task> taskList) {
-        printMessage("Task successfully added:\n" + taskList.get(taskList.size() - 1) + "\n" + "Task counter: " + taskList.size());
+        printMessage("Task successfully added:\n" + taskList.get(taskList.size() - 1) + "\n" + "Task counter: " +
+                taskList.size());
     }
 
     public static void printList(ArrayList<Task> tasks) {
@@ -43,8 +46,6 @@ public class Ui {
         printMessage(listText);
     }
 
-
-
     public static void printGreeting() {
         printMessage("Hello! I'm Keeka\nWhat can I do for you?");
     }
@@ -53,9 +54,7 @@ public class Ui {
         printMessage("Bye. Hope to see you again soon!");
     }
 
-    public static void printMessage(String message) {
-        System.out.println("_________________________________________________");
-        System.out.println(message);
-        System.out.println("_________________________________________________");
+    public static String printMessage(String message) {
+        return message;
     }
 }

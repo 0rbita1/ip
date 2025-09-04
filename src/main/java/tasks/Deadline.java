@@ -1,4 +1,4 @@
-package keeka;
+package tasks;
 
 import java.time.format.DateTimeFormatter;
 import java.time.LocalDate;
@@ -20,8 +20,7 @@ public class Deadline extends Task {
         this.dateTime = dateTime;
     }
 
-    @Override
-    public String toString() {
+    public String toStringPretty() {
         String by;
         if (date != null) {
             by = date.format(DateTimeFormatter.ofPattern("MMM dd yyyy"));
@@ -37,7 +36,8 @@ public class Deadline extends Task {
      *
      * @return A string in the format "[D] [superclass string] (by: [date/datetime string])".
      */
-    public String printInISO() {
+    @Override
+    public String toString() {
         String by;
         if (date != null) {
             by = date.toString();
@@ -46,5 +46,4 @@ public class Deadline extends Task {
         }
         return "[D] " + super.toString() + " (by: " + by + ")";
     }
-
 }

@@ -1,6 +1,10 @@
 package keeka;
 
-import java.io.FileNotFoundException;
+import tasks.Deadline;
+import tasks.Event;
+import tasks.Task;
+import tasks.ToDo;
+
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;

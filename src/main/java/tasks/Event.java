@@ -1,4 +1,4 @@
-package keeka;
+package tasks;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -24,8 +24,7 @@ public class Event extends Task {
         this.endDateTime = endDateTime;
     }
 
-    @Override
-    public String toString() {
+    public String toStringPretty() {
         String from, to;
         if (startDate != null && endDate != null) {
             from = startDate.format(DateTimeFormatter.ofPattern("MMM dd yyyy"));
@@ -37,7 +36,6 @@ public class Event extends Task {
         return "[E] " + super.toString() + " (from: " + from + " to: " + to + ")";
     }
 
-
     /**
      * Returns a string representation of the Event task in ISO format.
      * This method constructs a string containing the object's superclass string representation,
@@ -45,7 +43,8 @@ public class Event extends Task {
      * @return A string in the format "[E] [superclass string] (from: [date/datetime string] to:
      * [date/datetime string])".
      */
-    public String printISO() {
+    @Override
+    public String toString() {
         String from, to;
         if (startDate != null && endDate != null) {
             from = startDate.toString();
