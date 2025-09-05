@@ -5,18 +5,20 @@ import tasks.Task;
 import java.util.ArrayList;
 
 public class Ui {
+    private static ArrayList<String> stringBuffer;
 
     public Ui() {
+        stringBuffer = new ArrayList<>();
     }
 
     public static void printSuccessfulTaskAddition(ArrayList<Task> taskList) {
-        printMessage("Task successfully added:\n" + taskList.get(taskList.size() - 1) + "\n" + "Task counter: " +
+        addMessageToBuffer("Task successfully added:\n" + taskList.get(taskList.size() - 1) + "\n" + "Task counter: " +
                 taskList.size());
     }
 
     public static void printList(ArrayList<Task> tasks) {
         if (tasks.isEmpty()) {
-            printMessage("List is empty! Add tasks to display");
+            addMessageToBuffer("List is empty! Add tasks to display");
             return;
         }
 
@@ -27,12 +29,12 @@ public class Ui {
             listText = listText.concat((i + 1) + ". " + currentTask.toString() + "\n");
         }
 
-        printMessage(listText);
+        addMessageToBuffer(listText);
     }
 
     public static void printQueryList(ArrayList<Task> tasks) {
         if (tasks.isEmpty()) {
-            printMessage("Unable to find any matches for your query!");
+            addMessageToBuffer("Unable to find any matches for your query!");
             return;
         }
 
@@ -43,18 +45,25 @@ public class Ui {
             listText = listText.concat((i + 1) + ". " + currentTask.toString() + "\n");
         }
 
-        printMessage(listText);
+        addMessageToBuffer(listText);
     }
 
     public static void printGreeting() {
-        printMessage("Hello! I'm Keeka\nWhat can I do for you?");
+        addMessageToBuffer("Hello! I'm Keeka\nWhat can I do for you?");
     }
 
     public static void printBye() {
-        printMessage("Bye. Hope to see you again soon!");
+        addMessageToBuffer("Bye. Hope to see you again soon!");
     }
 
-    public static String printMessage(String message) {
-        return message;
+    public static void addMessageToBuffer(String message) {
+        stringBuffer.add(message);
+        System.out.println("====================================================================");
+        System.out.println(message);
+        System.out.println("====================================================================");
+    }
+
+    public static String retrieveMessage() {
+        return stringBuffer.get(stringBuffer.size() - 1);
     }
 }

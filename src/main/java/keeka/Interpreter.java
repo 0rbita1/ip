@@ -9,7 +9,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.Scanner;
+
+import static keeka.Ui.addMessageToBuffer;
 
 public class Interpreter {
 
@@ -28,18 +29,14 @@ public class Interpreter {
      *
      * @param tasks The ArrayList of Task objects that the commands will operate on.
      */
-    public static void interpretInputs(ArrayList<Task> tasks) {
-        Scanner s = new Scanner(System.in);
-        String input = "";
-        input = s.nextLine();
+    public static void interpretInputs(ArrayList<Task> tasks, String input) {
 
-        while (!Objects.equals(input, "bye")) {
-            if (Objects.equals(input, "list")) {
-                Ui.printList(tasks);
-                input = s.nextLine();
-                continue;
-            }
 
+        if (Objects.equals(input, "bye")) {
+            Ui.printBye();
+        } else if (Objects.equals(input, "list")) {
+            Ui.printList(tasks);
+        } else {
             try {
                 String[] parsedInput = input.split(" ", 2);
                 String firstWord = parsedInput[0];
@@ -58,12 +55,10 @@ public class Interpreter {
                 }
 
             } catch (Exception e) {
-                Ui.printMessage(e.getMessage());
-            } finally {
-                input = s.nextLine();
+                Ui.addMessageToBuffer(e.getMessage());
             }
-
         }
+
     }
 
     private static void interpretTask(String userInput, ArrayList<Task> tasks) throws InvalidTaskException {
@@ -88,7 +83,8 @@ public class Interpreter {
             }
 
         } catch (Exception e) {
-            throw new InvalidTaskException("Invalid task invocation!");
+            Ui.addMessageToBuffer("Invalid task invocation! " + e);
+            throw new InvalidTaskException("Invalid task invocation! " + e);
         }
     }
 
@@ -118,8 +114,11 @@ public class Interpreter {
                 Storage.loadDeadline(description, isDone, deadlineDate, tasks);
             }
         } catch (DateTimeParseException e) {
-            System.out.println("Invalid date format for deadline input! " + e);
+            System.out.println("Invalid date format for deadline input! " + e + "\n");
             System.out.println("Deadline date format as follows: YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS");
+            Ui.addMessageToBuffer("Invalid date format for deadline input! " + e + "\n" + "Event deadline format as " +
+                    "follows:" +
+                    " YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS");
         }
     }
 
@@ -156,8 +155,10 @@ public class Interpreter {
                 Storage.loadEvent(description, isDone, eventStart, eventEnd, tasks);
             }
         } catch (DateTimeParseException e) {
-            System.out.println("Invalid date format for event input! " + e);
+            System.out.println("Invalid date format for event input! " + e + "\n");
             System.out.println("Event date format as follows: YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS");
+            Ui.addMessageToBuffer("Invalid date format for event input! " + e + "\n" + "Event date format as follows:" +
+                    " YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS");
         }
 
     }
@@ -174,7 +175,8 @@ public class Interpreter {
             }
 
         } catch (Exception e) {
-            throw new InvalidMarkingException("Invalid marking invocation!");
+            Ui.addMessageToBuffer("Invalid marking invocation! " + e + "\n");
+            throw new InvalidMarkingException("Invalid marking invocation! " + e + "\n");
         }
     }
 
@@ -185,7 +187,8 @@ public class Interpreter {
             TaskList.deleteTask(tasks, indexNumber);
 
         } catch (Exception e) {
-            throw new Exception("Invalid deletion invocation!");
+            Ui.addMessageToBuffer("Invalid deletion invocation! " + e + "\n");
+            throw new Exception("Invalid deletion invocation! " + e + "\n");
         }
     }
 
@@ -196,7 +199,8 @@ public class Interpreter {
             ArrayList<Task> queryResult = TaskList.findQuery(query, tasks);
             Ui.printQueryList(queryResult);
         } catch (Exception e) {
-            throw new Exception("Invalid find invocation!");
+            Ui.addMessageToBuffer("Invalid find invocation! " + e + "\n");
+            throw new Exception("Invalid find invocation! " + e + "\n");
         }
     }
 }

@@ -1,3 +1,9 @@
-1. [D] [ ] something old (by: 2025-08-08)
-2. [D] [ ] something new (by: 2025-08-08T00:00)
-3. [E] [X] something else old (from: 2025-08-08 to: 2025-08-08)
+1. [D] [ ]   something new (by: 2025-08-08T00:00)
+2. [E] [ ]   something else old (from: 2025-08-08 to: 2025-08-08)
+3. [T] [X]  something
+4. [T] [ ]  blah blah
+5. [D] [X]  return book (by: 2025-09-04)
+6. [D] [ ] Submit quarterly tax returns (by: 2025-03-15)
+7. [D] [ ] Submit presentation slides (by: 2025-09-06T14:30)
+8. [E] [ ] Board meeting (from: 2025-09-05T09:00 to: 2025-09-05T11:00)
+9. [T] [ ] 

@@ -130,14 +130,14 @@ public class TaskList {
      */
     public static void markTask(ArrayList<Task> tasks, int index) throws IOException {
         if (index < 1 || index > tasks.size()) {
-            Ui.printMessage("Invalid index number! Use an integer within the range of the size of the list");
+            Ui.addMessageToBuffer("Invalid index number! Use an integer within the range of the size of the list");
             return;
         }
 
         Task desiredTask = tasks.get(index - 1);
         desiredTask.setDone();
         tasks.set(index - 1, desiredTask);
-        Ui.printMessage("Task successfully marked as done:\n" + desiredTask);
+        Ui.addMessageToBuffer("Task successfully marked as done:\n" + desiredTask);
         Storage.updateTaskInSave(tasks);
     }
 
@@ -155,14 +155,14 @@ public class TaskList {
      */
     public static void unmarkTask(ArrayList<Task> tasks, int index) throws IOException {
         if (index < 1 || index > tasks.size()) {
-            Ui.printMessage("Invalid index number! Use an integer within the range of the size of the list");
+            Ui.addMessageToBuffer("Invalid index number! Use an integer within the range of the size of the list");
             return;
         }
 
         Task desiredTask = tasks.get(index - 1);
         desiredTask.setNotDone();
         tasks.set(index - 1, desiredTask);
-        Ui.printMessage("Task successfully marked as NOT done:\n" + desiredTask);
+        Ui.addMessageToBuffer("Task successfully marked as NOT done:\n" + desiredTask);
         Storage.updateTaskInSave(tasks);
     }
 
@@ -179,13 +179,13 @@ public class TaskList {
      */
     public static void deleteTask(ArrayList<Task> tasks, int index) throws IOException {
         if (index < 1 || index > tasks.size()) {
-            Ui.printMessage("Invalid index number! Use an integer within the range of the size of the list");
+            Ui.addMessageToBuffer("Invalid index number! Use an integer within the range of the size of the list");
             return;
         }
 
         Task desiredTask = tasks.get(index - 1);
         tasks.remove(index - 1);
-        Ui.printMessage("Task successfully deleted:\n" + desiredTask + "\n" + "Task counter: " + tasks.size());
+        Ui.addMessageToBuffer("Task successfully deleted:\n" + desiredTask + "\n" + "Task counter: " + tasks.size());
         Storage.updateTaskInSave(tasks);
     }
 

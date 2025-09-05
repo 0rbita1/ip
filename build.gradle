@@ -41,6 +41,10 @@ test {
     }
 }
 
+checkstyle {
+    toolVersion = '11.0.1'
+}
+
 application {
     mainClass.set("Launcher")
 }

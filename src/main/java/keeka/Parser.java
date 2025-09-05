@@ -8,6 +8,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 
+import static keeka.Ui.addMessageToBuffer;
+
 public class Parser {
     final static int TASK_CODE_INDEX = 1;
     final static int MARKED_STATUS_INDEX = 4;
@@ -69,6 +71,8 @@ public class Parser {
         } catch (DateTimeParseException | IOException e) {
             System.out.println("Invalid date format for deadline input! " + e);
             System.out.println("Deadline date format as follows: YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS");
+            addMessageToBuffer("Invalid date format for deadline input! " + e + "Deadline date format as follows: " +
+                    "YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS");
         }
 
     }
@@ -105,8 +109,11 @@ public class Parser {
                 TaskList.addEvent(eventDescription, false, eventStart, eventEnd, tasks);
             }
         } catch (DateTimeParseException | IOException e) {
-            System.out.println("Invalid date format for event input! " + e);
+            System.out.println("Invalid date format for event input! " + e + "\n");
             System.out.println("Event date format as follows: YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS");
+
+            addMessageToBuffer("Invalid date format for event input! " + e + "\n" + "Event date format as follows: " +
+                    "YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS");
         }
     }
 

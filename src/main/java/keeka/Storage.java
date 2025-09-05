@@ -14,6 +14,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import static keeka.Ui.addMessageToBuffer;
+
 public class Storage {
     final static String SAVE_FILE_PATH = "src/main/java/keeka/List.txt";
     static File saveFile;
@@ -42,7 +44,8 @@ public class Storage {
             }
 
         } catch (FileNotFoundException e) {
-            System.out.println("File not found! " + e);
+            System.out.println("File not found! " + e + "\n");
+            addMessageToBuffer("File not found! " + e + "\n");
         }
     }
 
