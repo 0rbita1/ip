@@ -1,8 +1,8 @@
-1. [D] [ ]   something new (by: 2025-08-08T00:00)
-2. [E] [ ]   something else old (from: 2025-08-08 to: 2025-08-08)
-3. [T] [ ]   blah blah
-4. [D] [ ]   return book (by: 2025-09-04)
-5. [D] [ ]   Submit quarterly tax returns (by: 2025-03-15)
-6. [D] [ ]   Submit presentation slides (by: 2025-09-06T14:30)
-7. [T] [ ]   
-8. [T] [ ] new update to description
+1. [D] [ ]    something new (by: 2025-08-08T00:00)
+2. [E] [ ]    something else old (from: 2025-08-08 to: 2025-08-08)
+3. [T] [ ]    blah blah
+4. [D] [ ]    return book (by: 2025-09-04)
+5. [D] [ ]    Submit quarterly tax returns (by: 2025-03-15)
+6. [D] [ ]    Submit presentation slides (by: 2025-09-06T14:30)
+7. [T] [ ]    
+8. [T] [ ] an even newer description

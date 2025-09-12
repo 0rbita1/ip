@@ -127,20 +127,13 @@ public class Parser {
             int indexNumber = Integer.parseInt(indexRemainingInputSplit[0]) - 1;
             Task updateTask = tasks.get(indexNumber);
             ParsedSaveContent parsedTask = parseSaveContent("1. " + updateTask.toString());
-            char taskCode = parsedTask.getTaskCode();
-            boolean isMarked = parsedTask.getMarkedStatus();
-            String remainingInput = indexRemainingInputSplit[1];
-            String[] fieldTypeNewValueSplit = remainingInput.split(" ", 2);
+
+            String[] fieldTypeNewValueSplit = indexRemainingInputSplit[1].split(" ", 2);
             String fieldType = fieldTypeNewValueSplit[0];
             String newValue = fieldTypeNewValueSplit[1];
 
-            switch (taskCode) {
-            case 'T' -> parseToDoUpdate(indexNumber, fieldType, newValue, isMarked, tasks);
-            case 'D' -> parseDeadlineUpdate(indexNumber, fieldType, newValue, isMarked, tasks);
-            case 'E' -> parseEventUpdate(indexNumber, fieldType, newValue, isMarked, tasks);
-            default -> throw new RuntimeException();
-            }
-
+            updateTaskByType(parsedTask.getTaskCode(), indexNumber, fieldType, newValue,
+                    parsedTask.getMarkedStatus(), tasks);
             return parsedTask;
 
         } catch (RuntimeException e) {
@@ -149,21 +142,33 @@ public class Parser {
         }
     }
 
+    private static void updateTaskByType(char taskCode, int indexNumber, String fieldType,
+                                         String newValue, boolean isMarked, ArrayList<Task> tasks) throws Exception {
+        switch (taskCode) {
+        case 'T' -> parseToDoUpdate(indexNumber, fieldType, newValue, isMarked, tasks);
+        case 'D' -> parseDeadlineUpdate(indexNumber, fieldType, newValue, isMarked, tasks);
+        case 'E' -> parseEventUpdate(indexNumber, fieldType, newValue, isMarked, tasks);
+        default -> throw new RuntimeException("Unknown task type: " + taskCode);
+        }
+    }
+
     public static void parseToDoUpdate(int indexNumber, String fieldType, String newValue, boolean isMarked,
                                        ArrayList<Task> tasks) throws Exception {
         try {
-            if (Objects.equals(fieldType, "description")) {
-                tasks.remove(indexNumber);
-                ToDo toDo = new ToDo(newValue, isMarked);
-                tasks.add(toDo);
-                Storage.updateTaskInSave(tasks);
-            } else {
-                addMessageToBuffer("Only field which can be modified for ToDo task is \"description\"");
-                throw new RuntimeException("Only field which can be modified for ToDo task is \"description\"");
-            }
+            validateToDoUpdateField(fieldType);
+            replaceTaskAtIndex(indexNumber, new ToDo(newValue, isMarked), tasks);
+            Storage.updateTaskInSave(tasks);
         } catch (RuntimeException e) {
             addMessageToBuffer("Unable to parse update ToDo command! " + e);
             throw new RuntimeException(e);
+        }
+    }
+
+    private static void validateToDoUpdateField(String fieldType) {
+        if (!Objects.equals(fieldType, "description")) {
+            String errorMsg = "Only field which can be modified for ToDo task is \"description\"";
+            addMessageToBuffer(errorMsg);
+            throw new RuntimeException(errorMsg);
         }
     }
 
@@ -171,33 +176,8 @@ public class Parser {
                                            ArrayList<Task> tasks) {
         try {
             Deadline currentDeadline = (Deadline) tasks.get(indexNumber);
-
-            if (Objects.equals(fieldType, "description")) {
-                if (currentDeadline.getDateTime() == null) {
-                    Deadline newDeadline = new Deadline(newValue, isMarked, currentDeadline.getDate());
-                    tasks.add(newDeadline);
-                    tasks.remove(indexNumber);
-                } else if (currentDeadline.getDate() == null) {
-                    Deadline newDeadline = new Deadline(newValue, isMarked, currentDeadline.getDateTime());
-                    tasks.add(newDeadline);
-                    tasks.remove(indexNumber);
-                } else {
-                    throw new RuntimeException();
-                }
-            } else if (Objects.equals(fieldType, "date")) {
-                if (newValue.contains("T")) {
-                    LocalDateTime deadlineDateTime = LocalDateTime.parse(newValue);
-                    Deadline newDeadline = new Deadline(currentDeadline.getDescription(), isMarked, deadlineDateTime);
-                    tasks.add(newDeadline);
-                    tasks.remove(indexNumber);
-                } else {
-                    LocalDate deadlineDate = LocalDate.parse(newValue);
-                    Deadline newDeadline = new Deadline(currentDeadline.getDescription(), isMarked, deadlineDate);
-                    tasks.add(newDeadline);
-                    tasks.remove(indexNumber);
-                }
-            }
-
+            Deadline newDeadline = createUpdatedDeadline(currentDeadline, fieldType, newValue, isMarked);
+            replaceTaskAtIndex(indexNumber, newDeadline, tasks);
             Storage.updateTaskInSave(tasks);
         } catch (RuntimeException | IOException e) {
             addMessageToBuffer("Unable to parse update Deadline command! " + e);
@@ -205,58 +185,97 @@ public class Parser {
         }
     }
 
+    private static Deadline createUpdatedDeadline(Deadline current, String fieldType, String newValue, boolean isMarked) {
+        if (Objects.equals(fieldType, "description")) {
+            return updateDeadlineDescription(current, newValue, isMarked);
+        } else if (Objects.equals(fieldType, "date")) {
+            return updateDeadlineDate(current, newValue, isMarked);
+        } else {
+            throw new RuntimeException("Invalid field type for Deadline: " + fieldType);
+        }
+    }
+
+    private static Deadline updateDeadlineDescription(Deadline current, String newDescription, boolean isMarked) {
+        if (current.getDateTime() != null) {
+            return new Deadline(newDescription, isMarked, current.getDateTime());
+        } else if (current.getDate() != null) {
+            return new Deadline(newDescription, isMarked, current.getDate());
+        } else {
+            throw new RuntimeException("Deadline has no valid date/time");
+        }
+    }
+
+    private static Deadline updateDeadlineDate(Deadline current, String newValue, boolean isMarked) {
+        if (newValue.contains("T")) {
+            LocalDateTime deadlineDateTime = LocalDateTime.parse(newValue);
+            return new Deadline(current.getDescription(), isMarked, deadlineDateTime);
+        } else {
+            LocalDate deadlineDate = LocalDate.parse(newValue);
+            return new Deadline(current.getDescription(), isMarked, deadlineDate);
+        }
+    }
+
     public static void parseEventUpdate(int indexNumber, String fieldType, String newValue, boolean isMarked,
                                         ArrayList<Task> tasks) {
         try {
             Event currentEvent = (Event) tasks.get(indexNumber);
-
-            if (Objects.equals(fieldType, "description")) {
-                if (currentEvent.getStartDateTime() == null) {
-                    Event newEvent = new Event(newValue, isMarked, currentEvent.getStartDate(),
-                            currentEvent.getEndDate());
-                    tasks.add(newEvent);
-                    tasks.remove(indexNumber);
-                } else if (currentEvent.getStartDate() == null) {
-                    Event newEvent = new Event(newValue, isMarked, currentEvent.getStartDateTime(),
-                            currentEvent.getEndDateTime());
-                    tasks.add(newEvent);
-                    tasks.remove(indexNumber);
-                }
-            } else if (Objects.equals(fieldType, "startDate")) {
-                if (newValue.contains("T")) {
-                    LocalDateTime eventDateTime = LocalDateTime.parse(newValue);
-                    Event newEvent = new Event(currentEvent.getDescription(), isMarked, eventDateTime,
-                            currentEvent.getEndDateTime());
-                    tasks.add(newEvent);
-                    tasks.remove(indexNumber);
-                } else {
-                    LocalDate eventDate = LocalDate.parse(newValue);
-                    Event newEvent = new Event(currentEvent.getDescription(), isMarked, eventDate,
-                            currentEvent.getEndDate());
-                    tasks.add(newEvent);
-                    tasks.remove(indexNumber);
-                }
-            } else if (Objects.equals(fieldType, "endDate")) {
-                if (newValue.contains("T")) {
-                    LocalDateTime eventDateTime = LocalDateTime.parse(newValue);
-                    Event newEvent = new Event(currentEvent.getDescription(), isMarked, currentEvent.getStartDateTime(),
-                            eventDateTime);
-                    tasks.add(newEvent);
-                    tasks.remove(indexNumber);
-                } else {
-                    LocalDate eventDate = LocalDate.parse(newValue);
-                    Event newEvent = new Event(currentEvent.getDescription(), isMarked, currentEvent.getStartDate(),
-                            eventDate);
-                    tasks.add(newEvent);
-                    tasks.remove(indexNumber);
-                }
-            }
-
-        } catch (RuntimeException e) {
+            Event newEvent = createUpdatedEvent(currentEvent, fieldType, newValue, isMarked);
+            replaceTaskAtIndex(indexNumber, newEvent, tasks);
+            Storage.updateTaskInSave(tasks);
+        } catch (RuntimeException | IOException e) {
             addMessageToBuffer("Unable to parse update Event command! " + e);
             throw new RuntimeException(e);
         }
+    }
 
+    private static Event createUpdatedEvent(Event current, String fieldType, String newValue, boolean isMarked) {
+        switch (fieldType) {
+        case "description" -> {
+            return updateEventDescription(current, newValue, isMarked);
+        }
+        case "startDate" -> {
+            return updateEventStartDate(current, newValue, isMarked);
+        }
+        case "endDate" -> {
+            return updateEventEndDate(current, newValue, isMarked);
+        }
+        default -> throw new RuntimeException("Invalid field type for Event: " + fieldType);
+        }
+    }
+
+    private static Event updateEventDescription(Event current, String newDescription, boolean isMarked) {
+        if (current.getStartDateTime() != null) {
+            return new Event(newDescription, isMarked, current.getStartDateTime(), current.getEndDateTime());
+        } else if (current.getStartDate() != null) {
+            return new Event(newDescription, isMarked, current.getStartDate(), current.getEndDate());
+        } else {
+            throw new RuntimeException("Event has no valid start date/time");
+        }
+    }
+
+    private static Event updateEventStartDate(Event current, String newValue, boolean isMarked) {
+        if (newValue.contains("T")) {
+            LocalDateTime eventDateTime = LocalDateTime.parse(newValue);
+            return new Event(current.getDescription(), isMarked, eventDateTime, current.getEndDateTime());
+        } else {
+            LocalDate eventDate = LocalDate.parse(newValue);
+            return new Event(current.getDescription(), isMarked, eventDate, current.getEndDate());
+        }
+    }
+
+    private static Event updateEventEndDate(Event current, String newValue, boolean isMarked) {
+        if (newValue.contains("T")) {
+            LocalDateTime eventDateTime = LocalDateTime.parse(newValue);
+            return new Event(current.getDescription(), isMarked, current.getStartDateTime(), eventDateTime);
+        } else {
+            LocalDate eventDate = LocalDate.parse(newValue);
+            return new Event(current.getDescription(), isMarked, current.getStartDate(), eventDate);
+        }
+    }
+
+    private static void replaceTaskAtIndex(int index, Task newTask, ArrayList<Task> tasks) {
+        tasks.remove(index);
+        tasks.add(index, newTask);
     }
 
 
