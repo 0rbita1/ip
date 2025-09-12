@@ -4,19 +4,14 @@ import exceptions.InvalidMarkingException;
 import exceptions.InvalidTaskException;
 import tasks.Task;
 
+import java.util.Objects;
+import java.util.ArrayList;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.Objects;
-
-import static keeka.Ui.addMessageToBuffer;
 
 public class Interpreter {
-
-    public Interpreter() {
-
-    }
 
     /**
      * Reads and interprets user commands from the console until the "bye" command is received.
@@ -31,7 +26,6 @@ public class Interpreter {
      */
     public static void interpretInputs(ArrayList<Task> tasks, String input) {
 
-
         if (Objects.equals(input, "bye")) {
             Ui.printBye();
         } else if (Objects.equals(input, "list")) {
@@ -41,8 +35,8 @@ public class Interpreter {
                 String[] parsedInput = input.split(" ", 2);
                 String firstWord = parsedInput[0];
 
-                if (Objects.equals(firstWord, "todo") || (Objects.equals(firstWord, "deadline")) ||
-                        (Objects.equals(firstWord, "event"))) {
+                if (Objects.equals(firstWord, "todo") || (Objects.equals(firstWord, "deadline"))
+                        || (Objects.equals(firstWord, "event"))) {
                     interpretTask(input, tasks);
                 } else if (Objects.equals(firstWord, "mark") || (Objects.equals(firstWord, "unmark"))) {
                     interpretMark(input, tasks);
@@ -50,6 +44,8 @@ public class Interpreter {
                     interpretDelete(input, tasks);
                 } else if (Objects.equals(firstWord, "find")) {
                     interpretFind(input, tasks);
+                } else if (Objects.equals(firstWord, "update")) {
+                    Parser.parseUpdate(parsedInput[1], tasks);
                 } else {
                     throw new Exception("Invalid command!");
                 }
@@ -79,6 +75,9 @@ public class Interpreter {
             case "event" -> {
                 Parser.parseEventInput(remainingContent, tasks);
                 Ui.printSuccessfulTaskAddition(tasks);
+            }
+            default -> {
+
             }
             }
 
@@ -114,11 +113,12 @@ public class Interpreter {
                 Storage.loadDeadline(description, isDone, deadlineDate, tasks);
             }
         } catch (DateTimeParseException e) {
-            System.out.println("Invalid date format for deadline input! " + e + "\n");
-            System.out.println("Deadline date format as follows: YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS");
-            Ui.addMessageToBuffer("Invalid date format for deadline input! " + e + "\n" + "Event deadline format as " +
-                    "follows:" +
-                    " YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS");
+            System.out.println("Invalid date format for deadline input! " + e + "\n" + "Event deadline format as "
+                    + "follows:"
+                    + " YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS");
+            Ui.addMessageToBuffer("Invalid date format for deadline input! " + e + "\n" + "Event deadline format as "
+                    + "follows:"
+                    + " YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS");
         }
     }
 
@@ -155,10 +155,10 @@ public class Interpreter {
                 Storage.loadEvent(description, isDone, eventStart, eventEnd, tasks);
             }
         } catch (DateTimeParseException e) {
-            System.out.println("Invalid date format for event input! " + e + "\n");
-            System.out.println("Event date format as follows: YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS");
-            Ui.addMessageToBuffer("Invalid date format for event input! " + e + "\n" + "Event date format as follows:" +
-                    " YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS");
+            System.out.println("Invalid date format for event input! " + e + "\n" + "Event date format as follows:"
+                    + " YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS");
+            Ui.addMessageToBuffer("Invalid date format for event input! " + e + "\n" + "Event date format as follows:"
+                    + " YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS");
         }
 
     }

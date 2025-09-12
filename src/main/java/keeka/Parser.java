@@ -1,19 +1,23 @@
 package keeka;
 
-import tasks.Task;
-
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Objects;
+
+import tasks.Deadline;
+import tasks.Event;
+import tasks.Task;
+import tasks.ToDo;
 
 import static keeka.Ui.addMessageToBuffer;
 
 public class Parser {
-    final static int TASK_CODE_INDEX = 1;
-    final static int MARKED_STATUS_INDEX = 4;
-    final static int SUBSTRING_START_INDEX = 7;
+    static final int TASK_CODE_INDEX = 1;
+    static final int MARKED_STATUS_INDEX = 4;
+    static final int SUBSTRING_START_INDEX = 7;
 
     public Parser() {
 
@@ -71,8 +75,8 @@ public class Parser {
         } catch (DateTimeParseException | IOException e) {
             System.out.println("Invalid date format for deadline input! " + e);
             System.out.println("Deadline date format as follows: YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS");
-            addMessageToBuffer("Invalid date format for deadline input! " + e + "Deadline date format as follows: " +
-                    "YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS");
+            addMessageToBuffer("Invalid date format for deadline input! " + e + "Deadline date format as follows: "
+                    + "YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS");
         }
 
     }
@@ -112,9 +116,148 @@ public class Parser {
             System.out.println("Invalid date format for event input! " + e + "\n");
             System.out.println("Event date format as follows: YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS");
 
-            addMessageToBuffer("Invalid date format for event input! " + e + "\n" + "Event date format as follows: " +
-                    "YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS");
+            addMessageToBuffer("Invalid date format for event input! " + e + "\n" + "Event date format as follows: "
+                    + "YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS");
         }
     }
+
+    public static ParsedSaveContent parseUpdate(String input, ArrayList<Task> tasks) throws Exception {
+        try {
+            String[] indexRemainingInputSplit = input.split(" ", 2);
+            int indexNumber = Integer.parseInt(indexRemainingInputSplit[0]) - 1;
+            Task updateTask = tasks.get(indexNumber);
+            ParsedSaveContent parsedTask = parseSaveContent("1. " + updateTask.toString());
+            char taskCode = parsedTask.getTaskCode();
+            boolean isMarked = parsedTask.getMarkedStatus();
+            String remainingInput = indexRemainingInputSplit[1];
+            String[] fieldTypeNewValueSplit = remainingInput.split(" ", 2);
+            String fieldType = fieldTypeNewValueSplit[0];
+            String newValue = fieldTypeNewValueSplit[1];
+
+            switch (taskCode) {
+            case 'T' -> parseToDoUpdate(indexNumber, fieldType, newValue, isMarked, tasks);
+            case 'D' -> parseDeadlineUpdate(indexNumber, fieldType, newValue, isMarked, tasks);
+            case 'E' -> parseEventUpdate(indexNumber, fieldType, newValue, isMarked, tasks);
+            default -> throw new RuntimeException();
+            }
+
+            return parsedTask;
+
+        } catch (RuntimeException e) {
+            addMessageToBuffer("Unable to parse update command! " + e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void parseToDoUpdate(int indexNumber, String fieldType, String newValue, boolean isMarked,
+                                       ArrayList<Task> tasks) throws Exception {
+        try {
+            if (Objects.equals(fieldType, "description")) {
+                tasks.remove(indexNumber);
+                ToDo toDo = new ToDo(newValue, isMarked);
+                tasks.add(toDo);
+                Storage.updateTaskInSave(tasks);
+            } else {
+                addMessageToBuffer("Only field which can be modified for ToDo task is \"description\"");
+                throw new RuntimeException("Only field which can be modified for ToDo task is \"description\"");
+            }
+        } catch (RuntimeException e) {
+            addMessageToBuffer("Unable to parse update ToDo command! " + e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void parseDeadlineUpdate(int indexNumber, String fieldType, String newValue, boolean isMarked,
+                                           ArrayList<Task> tasks) {
+        try {
+            Deadline currentDeadline = (Deadline) tasks.get(indexNumber);
+
+            if (Objects.equals(fieldType, "description")) {
+                if (currentDeadline.getDateTime() == null) {
+                    Deadline newDeadline = new Deadline(newValue, isMarked, currentDeadline.getDate());
+                    tasks.add(newDeadline);
+                    tasks.remove(indexNumber);
+                } else if (currentDeadline.getDate() == null) {
+                    Deadline newDeadline = new Deadline(newValue, isMarked, currentDeadline.getDateTime());
+                    tasks.add(newDeadline);
+                    tasks.remove(indexNumber);
+                } else {
+                    throw new RuntimeException();
+                }
+            } else if (Objects.equals(fieldType, "date")) {
+                if (newValue.contains("T")) {
+                    LocalDateTime deadlineDateTime = LocalDateTime.parse(newValue);
+                    Deadline newDeadline = new Deadline(currentDeadline.getDescription(), isMarked, deadlineDateTime);
+                    tasks.add(newDeadline);
+                    tasks.remove(indexNumber);
+                } else {
+                    LocalDate deadlineDate = LocalDate.parse(newValue);
+                    Deadline newDeadline = new Deadline(currentDeadline.getDescription(), isMarked, deadlineDate);
+                    tasks.add(newDeadline);
+                    tasks.remove(indexNumber);
+                }
+            }
+
+            Storage.updateTaskInSave(tasks);
+        } catch (RuntimeException | IOException e) {
+            addMessageToBuffer("Unable to parse update Deadline command! " + e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void parseEventUpdate(int indexNumber, String fieldType, String newValue, boolean isMarked,
+                                        ArrayList<Task> tasks) {
+        try {
+            Event currentEvent = (Event) tasks.get(indexNumber);
+
+            if (Objects.equals(fieldType, "description")) {
+                if (currentEvent.getStartDateTime() == null) {
+                    Event newEvent = new Event(newValue, isMarked, currentEvent.getStartDate(),
+                            currentEvent.getEndDate());
+                    tasks.add(newEvent);
+                    tasks.remove(indexNumber);
+                } else if (currentEvent.getStartDate() == null) {
+                    Event newEvent = new Event(newValue, isMarked, currentEvent.getStartDateTime(),
+                            currentEvent.getEndDateTime());
+                    tasks.add(newEvent);
+                    tasks.remove(indexNumber);
+                }
+            } else if (Objects.equals(fieldType, "startDate")) {
+                if (newValue.contains("T")) {
+                    LocalDateTime eventDateTime = LocalDateTime.parse(newValue);
+                    Event newEvent = new Event(currentEvent.getDescription(), isMarked, eventDateTime,
+                            currentEvent.getEndDateTime());
+                    tasks.add(newEvent);
+                    tasks.remove(indexNumber);
+                } else {
+                    LocalDate eventDate = LocalDate.parse(newValue);
+                    Event newEvent = new Event(currentEvent.getDescription(), isMarked, eventDate,
+                            currentEvent.getEndDate());
+                    tasks.add(newEvent);
+                    tasks.remove(indexNumber);
+                }
+            } else if (Objects.equals(fieldType, "endDate")) {
+                if (newValue.contains("T")) {
+                    LocalDateTime eventDateTime = LocalDateTime.parse(newValue);
+                    Event newEvent = new Event(currentEvent.getDescription(), isMarked, currentEvent.getStartDateTime(),
+                            eventDateTime);
+                    tasks.add(newEvent);
+                    tasks.remove(indexNumber);
+                } else {
+                    LocalDate eventDate = LocalDate.parse(newValue);
+                    Event newEvent = new Event(currentEvent.getDescription(), isMarked, currentEvent.getStartDate(),
+                            eventDate);
+                    tasks.add(newEvent);
+                    tasks.remove(indexNumber);
+                }
+            }
+
+        } catch (RuntimeException e) {
+            addMessageToBuffer("Unable to parse update Event command! " + e);
+            throw new RuntimeException(e);
+        }
+
+    }
+
 
 }

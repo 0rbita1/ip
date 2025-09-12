@@ -12,8 +12,8 @@ public class Ui {
     }
 
     public static void printSuccessfulTaskAddition(ArrayList<Task> taskList) {
-        addMessageToBuffer("Task successfully added:\n" + taskList.get(taskList.size() - 1) + "\n" + "Task counter: " +
-                taskList.size());
+        addMessageToBuffer("Task successfully added:\n" + taskList.get(taskList.size() - 1) + "\n" + "Task counter: "
+                + taskList.size());
     }
 
     public static void printList(ArrayList<Task> tasks) {

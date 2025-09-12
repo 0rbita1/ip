@@ -20,15 +20,18 @@ public class Deadline extends Task {
         this.dateTime = dateTime;
     }
 
-    public String toStringPretty() {
-        String by;
-        if (date != null) {
-            by = date.format(DateTimeFormatter.ofPattern("MMM dd yyyy"));
-        } else {
-            by = dateTime.format(DateTimeFormatter.ofPattern("MMM dd yyyy"));
-        }
-        return "[D] " + super.toString() + " (by: " + by + ")";
+
+
+    public LocalDate getDate() {
+        return this.date;
     }
+
+    public LocalDateTime getDateTime() {
+        return this.dateTime;
+    }
+
+
+
 
     /**
      * Returns a string representation of the Deadline task in ISO format.

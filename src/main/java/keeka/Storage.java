@@ -1,5 +1,6 @@
 package keeka;
 
+import exceptions.InvalidTaskException;
 import tasks.Deadline;
 import tasks.Event;
 import tasks.Task;
@@ -17,8 +18,8 @@ import java.util.Scanner;
 import static keeka.Ui.addMessageToBuffer;
 
 public class Storage {
-    final static String SAVE_FILE_PATH = "src/main/java/keeka/List.txt";
-    static File saveFile;
+    static final String SAVE_FILE_PATH = "src/main/java/keeka/List.txt";
+    private static File saveFile;
     public Storage() {
         saveFile = new File(SAVE_FILE_PATH);
     }
@@ -101,7 +102,7 @@ public class Storage {
      * @param date        The `LocalDateTime` object representing the deadline.
      * @param tasks       The `ArrayList` to which the new deadline task will be added.
      */
-    public static void loadDeadline(String description, Boolean isDone, LocalDateTime date, ArrayList<Task> tasks)  {
+    public static void loadDeadline(String description, Boolean isDone, LocalDateTime date, ArrayList<Task> tasks) {
         Deadline newDeadline = new Deadline(description, isDone, date);
         tasks.add(newDeadline);
     }
@@ -118,7 +119,7 @@ public class Storage {
      * @param date        The `LocalDate` object representing the deadline.
      * @param tasks       The `ArrayList` to which the new deadline task will be added.
      */
-    public static void loadDeadline(String description, Boolean isDone, LocalDate date, ArrayList<Task> tasks)  {
+    public static void loadDeadline(String description, Boolean isDone, LocalDate date, ArrayList<Task> tasks) {
         Deadline newDeadline = new Deadline(description, isDone, date);
         tasks.add(newDeadline);
     }

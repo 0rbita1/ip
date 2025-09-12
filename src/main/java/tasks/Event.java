@@ -24,28 +24,26 @@ public class Event extends Task {
         this.endDateTime = endDateTime;
     }
 
-    public String toStringPretty() {
-        String from, to;
-        if (startDate != null && endDate != null) {
-            from = startDate.format(DateTimeFormatter.ofPattern("MMM dd yyyy"));
-            to = endDate.format(DateTimeFormatter.ofPattern("MMM dd yyyy"));
-        } else {
-            from = startDateTime.format(DateTimeFormatter.ofPattern("MMM dd yyyy"));
-            to = endDateTime.format(DateTimeFormatter.ofPattern("MMM dd yyyy"));
-        }
-        return "[E] " + super.toString() + " (from: " + from + " to: " + to + ")";
+    public LocalDate getStartDate() {
+        return startDate;
     }
 
-    /**
-     * Returns a string representation of the Event task in ISO format.
-     * This method constructs a string containing the object's superclass string representation,
-     *
-     * @return A string in the format "[E] [superclass string] (from: [date/datetime string] to:
-     * [date/datetime string])".
-     */
+    public LocalDateTime getStartDateTime() {
+        return startDateTime;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
+    public LocalDateTime getEndDateTime() {
+        return endDateTime;
+    }
+
     @Override
     public String toString() {
-        String from, to;
+        String from;
+        String to;
         if (startDate != null && endDate != null) {
             from = startDate.toString();
             to = endDate.toString();
