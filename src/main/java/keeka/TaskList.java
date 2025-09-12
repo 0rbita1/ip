@@ -29,8 +29,18 @@ public class TaskList {
      */
     public static void addToDo(String description, Boolean isDone, ArrayList<Task> tasks)
             throws IOException {
+        assert description != null : "Task description cannot be null";
+        assert !description.trim().isEmpty() : "Task description cannot be empty";
+        assert isDone != null : "isDone parameter cannot be null";
+        assert tasks != null : "Task list cannot be null";
+
+        int initialSize = tasks.size();
         ToDo newToDo = new ToDo(description, isDone);
         tasks.add(newToDo);
+
+        assert tasks.size() == initialSize + 1 : "Task should be added to the list";
+        assert tasks.get(tasks.size() - 1) == newToDo : "New task should be at the end of the list";
+
         Storage.addToDoToSave(newToDo, tasks);
     }
 
@@ -49,8 +59,19 @@ public class TaskList {
      */
     public static void addDeadline(String description, Boolean isDone, LocalDateTime date, ArrayList<Task> tasks)
             throws IOException {
+        assert description != null : "Task description cannot be null";
+        assert !description.trim().isEmpty() : "Task description cannot be empty";
+        assert isDone != null : "isDone parameter cannot be null";
+        assert date != null : "Deadline date cannot be null";
+        assert tasks != null : "Task list cannot be null";
+
+        int initialSize = tasks.size();
         Deadline newDeadline = new Deadline(description, isDone, date);
         tasks.add(newDeadline);
+
+        assert tasks.size() == initialSize + 1 : "Task should be added to the list";
+        assert tasks.get(tasks.size() - 1) == newDeadline : "New task should be at the end of the list";
+
         Storage.addDeadlineToSave(newDeadline, tasks);
     }
 
@@ -69,8 +90,19 @@ public class TaskList {
      */
     public static void addDeadline(String description, Boolean isDone, LocalDate date, ArrayList<Task> tasks)
             throws IOException {
+        assert description != null : "Task description cannot be null";
+        assert !description.trim().isEmpty() : "Task description cannot be empty";
+        assert isDone != null : "isDone parameter cannot be null";
+        assert date != null : "Deadline date cannot be null";
+        assert tasks != null : "Task list cannot be null";
+
+        int initialSize = tasks.size();
         Deadline newDeadline = new Deadline(description, isDone, date);
         tasks.add(newDeadline);
+
+        assert tasks.size() == initialSize + 1 : "Task should be added to the list";
+        assert tasks.get(tasks.size() - 1) == newDeadline : "New task should be at the end of the list";
+
         Storage.addDeadlineToSave(newDeadline, tasks);
     }
 
@@ -89,9 +121,22 @@ public class TaskList {
      * @throws IOException If an I/O error occurs while saving the task to the file.
      */
     public static void addEvent(String description, Boolean isDone, LocalDateTime start, LocalDateTime end,
-                                 ArrayList<Task> tasks) throws IOException {
+                                ArrayList<Task> tasks) throws IOException {
+        assert description != null : "Task description cannot be null";
+        assert !description.trim().isEmpty() : "Task description cannot be empty";
+        assert isDone != null : "isDone parameter cannot be null";
+        assert start != null : "Event start time cannot be null";
+        assert end != null : "Event end time cannot be null";
+        assert start.isBefore(end) || start.isEqual(end) : "Event start time must be before or equal to end time";
+        assert tasks != null : "Task list cannot be null";
+
+        int initialSize = tasks.size();
         Event newEvent = new Event(description, isDone, start, end);
         tasks.add(newEvent);
+
+        assert tasks.size() == initialSize + 1 : "Task should be added to the list";
+        assert tasks.get(tasks.size() - 1) == newEvent : "New task should be at the end of the list";
+
         Storage.addEventToSave(newEvent, tasks);
     }
 
@@ -110,9 +155,22 @@ public class TaskList {
      * @throws IOException If an I/O error occurs while saving the task to the file.
      */
     public static void addEvent(String description, Boolean isDone, LocalDate start, LocalDate end,
-                                 ArrayList<Task> tasks) throws IOException {
+                                ArrayList<Task> tasks) throws IOException {
+        assert description != null : "Task description cannot be null";
+        assert !description.trim().isEmpty() : "Task description cannot be empty";
+        assert isDone != null : "isDone parameter cannot be null";
+        assert start != null : "Event start date cannot be null";
+        assert end != null : "Event end date cannot be null";
+        assert start.isBefore(end) || start.isEqual(end) : "Event start date must be before or equal to end date";
+        assert tasks != null : "Task list cannot be null";
+
+        int initialSize = tasks.size();
         Event newEvent = new Event(description, isDone, start, end);
         tasks.add(newEvent);
+
+        assert tasks.size() == initialSize + 1 : "Task should be added to the list";
+        assert tasks.get(tasks.size() - 1) == newEvent : "New task should be at the end of the list";
+
         Storage.addEventToSave(newEvent, tasks);
     }
 
@@ -129,14 +187,21 @@ public class TaskList {
      * @throws IOException If an I/O error occurs while updating the save file.
      */
     public static void markTask(ArrayList<Task> tasks, int index) throws IOException {
+        assert tasks != null : "Task list cannot be null";
+
         if (index < 1 || index > tasks.size()) {
             Ui.addMessageToBuffer("Invalid index number! Use an integer within the range of the size of the list");
             return;
         }
 
         Task desiredTask = tasks.get(index - 1);
+        assert desiredTask != null : "Task at valid index should not be null";
+
         desiredTask.setDone();
         tasks.set(index - 1, desiredTask);
+
+        assert tasks.get(index - 1) == desiredTask : "Updated task should be in the correct position";
+
         Ui.addMessageToBuffer("Task successfully marked as done:\n" + desiredTask);
         Storage.updateTaskInSave(tasks);
     }
@@ -154,14 +219,21 @@ public class TaskList {
      * @throws IOException If an I/O error occurs while updating the save file.
      */
     public static void unmarkTask(ArrayList<Task> tasks, int index) throws IOException {
+        assert tasks != null : "Task list cannot be null";
+
         if (index < 1 || index > tasks.size()) {
             Ui.addMessageToBuffer("Invalid index number! Use an integer within the range of the size of the list");
             return;
         }
 
         Task desiredTask = tasks.get(index - 1);
+        assert desiredTask != null : "Task at valid index should not be null";
+
         desiredTask.setNotDone();
         tasks.set(index - 1, desiredTask);
+
+        assert tasks.get(index - 1) == desiredTask : "Updated task should be in the correct position";
+
         Ui.addMessageToBuffer("Task successfully marked as NOT done:\n" + desiredTask);
         Storage.updateTaskInSave(tasks);
     }
@@ -178,13 +250,22 @@ public class TaskList {
      * @throws IOException If an I/O error occurs while updating the save file.
      */
     public static void deleteTask(ArrayList<Task> tasks, int index) throws IOException {
+        assert tasks != null : "Task list cannot be null";
+
         if (index < 1 || index > tasks.size()) {
             Ui.addMessageToBuffer("Invalid index number! Use an integer within the range of the size of the list");
             return;
         }
 
+        int initialSize = tasks.size();
         Task desiredTask = tasks.get(index - 1);
+        assert desiredTask != null : "Task at valid index should not be null";
+
         tasks.remove(index - 1);
+
+        assert tasks.size() == initialSize - 1 : "Task list size should decrease by 1 after deletion";
+        assert !tasks.contains(desiredTask) : "Deleted task should no longer be in the list";
+
         Ui.addMessageToBuffer("Task successfully deleted:\n" + desiredTask + "\n" + "Task counter: " + tasks.size());
         Storage.updateTaskInSave(tasks);
     }
@@ -201,15 +282,27 @@ public class TaskList {
      * @return An `ArrayList` of `Task` objects that contain the search query.
      */
     public static ArrayList<Task> findQuery(String query, ArrayList<Task> tasks) {
+        assert query != null : "Search query cannot be null";
+        assert tasks != null : "Task list cannot be null";
+
         ArrayList<Task> result = new ArrayList<>();
 
         for (int i = 0; i < tasks.size(); i++) {
             Task task = tasks.get(i);
+            assert task != null : "Task in list should not be null";
+
             String description = task.getDescription();
+            assert description != null : "Task description should not be null";
 
             if (description.contains(query)) {
                 result.add(task);
             }
+        }
+
+        assert result != null : "Result list should not be null";
+        // Verify that all tasks in result actually contain the query
+        for (Task task : result) {
+            assert task.getDescription().contains(query) : "All result tasks should contain the search query";
         }
 
         return result;
