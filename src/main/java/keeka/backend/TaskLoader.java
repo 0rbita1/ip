@@ -87,10 +87,10 @@ public class TaskLoader {
         String dateString = parts[1].substring(0, parts[1].length() - 1);
 
         if (dateString.contains("T")) {
-            return TaskFactory.createDeadline(description, isDone, 
+            return TaskFactory.createDeadline(description, isDone,
                 java.time.LocalDateTime.parse(dateString));
         } else {
-            return TaskFactory.createDeadline(description, isDone, 
+            return TaskFactory.createDeadline(description, isDone,
                 java.time.LocalDate.parse(dateString));
         }
     }

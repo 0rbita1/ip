@@ -43,14 +43,14 @@ public class Keeka {
      */
     public void run() {
         interpreter.start();
-        
+
         Scanner scanner = new Scanner(System.in);
         String input;
-        
+
         while (!(input = scanner.nextLine()).equals("bye")) {
             interpreter.processCommand(input);
         }
-        
+
         interpreter.processCommand("bye");
         scanner.close();
     }

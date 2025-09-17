@@ -1,9 +1,5 @@
 package keeka.backend;
 
-import java.util.List;
-
-import keeka.tasks.Task;
-
 /**
  * Main interpreter that coordinates command processing and application flow.
  * Acts as the central controller that routes user commands to appropriate

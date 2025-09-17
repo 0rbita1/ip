@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 
 import keeka.tasks.Deadline;
 import keeka.tasks.Event;
-import keeka.tasks.Task;
 import keeka.tasks.ToDo;
 
 /**

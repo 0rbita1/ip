@@ -1,8 +1,10 @@
 package keeka.backend;
 
-import java.io.*;
-import java.util.List;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 import keeka.tasks.Task;
@@ -79,7 +81,11 @@ public class Storage {
     private void createFileIfNotExists() {
         File file = new File(filePath);
         try {
-            file.getParentFile().mkdirs();
+            // Only create parent directories if they exist (i.e., the file has a parent directory)
+            File parentDir = file.getParentFile();
+            if (parentDir != null) {
+                parentDir.mkdirs();
+            }
             file.createNewFile();
         } catch (IOException e) {
             System.err.println("Failed to create storage file: " + e.getMessage());

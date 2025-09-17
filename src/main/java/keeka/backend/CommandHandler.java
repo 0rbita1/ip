@@ -44,7 +44,7 @@ public class CommandHandler {
             ui.showError("Invalid task invocation!");
             return;
         }
-        
+
         try {
             ToDo todo = TaskFactory.createToDo(input.trim(), false);
             taskList.addTask(todo);
@@ -66,17 +66,19 @@ public class CommandHandler {
             ui.showError("Invalid task invocation!");
             return;
         }
-        
+
         try {
             Parser.DeadlineInput deadlineInput = parser.parseDeadlineInput(input.trim());
             Deadline deadline;
-            
+
             if (deadlineInput.getDateTime() != null) {
-                deadline = TaskFactory.createDeadline(deadlineInput.getDescription(), false, deadlineInput.getDateTime());
+                deadline = TaskFactory.createDeadline(deadlineInput.getDescription(), false,
+                        deadlineInput.getDateTime());
             } else {
-                deadline = TaskFactory.createDeadline(deadlineInput.getDescription(), false, deadlineInput.getDate());
+                deadline = TaskFactory.createDeadline(deadlineInput.getDescription(), false,
+                        deadlineInput.getDate());
             }
-            
+
             taskList.addTask(deadline);
             storage.saveTask(deadline, taskList.size());
             ui.showTaskAdded(deadline, taskList.size());
@@ -96,17 +98,17 @@ public class CommandHandler {
             ui.showError("Invalid task invocation!");
             return;
         }
-        
+
         try {
             Parser.EventInput eventInput = parser.parseEventInput(input.trim());
             Event event;
-            
+
             if (eventInput.getStartDateTime() != null) {
                 event = TaskFactory.createEvent(eventInput.getDescription(), false,
-                    eventInput.getStartDateTime(), eventInput.getEndDateTime());
+                        eventInput.getStartDateTime(), eventInput.getEndDateTime());
             } else {
                 event = TaskFactory.createEvent(eventInput.getDescription(), false,
-                    eventInput.getStartDate(), eventInput.getEndDate());
+                        eventInput.getStartDate(), eventInput.getEndDate());
             }
 
             taskList.addTask(event);
@@ -217,7 +219,7 @@ public class CommandHandler {
         try {
             Parser.UpdateInput updateInput = parser.parseUpdateInput(input);
             Task currentTask = taskList.getTask(updateInput.getTaskIndex());
-            
+
             if (currentTask != null) {
                 Task updatedTask = createUpdatedTask(currentTask, updateInput);
                 taskList.replaceTask(updateInput.getTaskIndex(), updatedTask);
@@ -276,7 +278,7 @@ public class CommandHandler {
                 }
             }
         }
-        
+
         throw new IllegalArgumentException("Invalid field type for task: " + fieldType);
     }
 }
