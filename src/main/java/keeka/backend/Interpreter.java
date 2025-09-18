@@ -39,6 +39,9 @@ public class Interpreter {
      * @param input The complete user input string containing command and arguments.
      */
     public void processCommand(String input) {
+
+        assert input != null : "Input should not be null";
+
         String[] parts = input.trim().split(" ", 2);
         String command = parts[0].toLowerCase();
         String args = parts.length > 1 ? parts[1] : "";
