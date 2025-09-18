@@ -23,6 +23,11 @@ public class TaskLoader {
      * @param parser The parser for processing saved task content.
      */
     public TaskLoader(TaskList taskList, Storage storage, Parser parser) {
+
+        assert taskList != null : "TaskList must not be null";
+        assert storage != null : "Storage must not be null";
+        assert parser != null : "Parser must not be null";
+
         this.taskList = taskList;
         this.storage = storage;
         this.parser = parser;
