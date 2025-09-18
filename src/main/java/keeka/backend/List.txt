@@ -2,9 +2,10 @@
 2. [D][ ] Complete project proposal review (by: 2025-09-20)
 3. [D][ ] Renew business license (by: 2025-12-31)
 4. [D][ ] Submit budget allocation request (by: 2025-10-15)
-5. [E][ ] Marketing conference attendance (from: 2025-09-10 to: 2025-09-12)
+5. [E][X] Marketing conference attendance (from: 2025-09-10 to: 2025-09-12)
 6. [E][ ] Summer vacation leave (from: 2025-07-01 to: 2025-07-15)
 7. [D][ ] Submit presentation slides (by: 2025-09-06T14:30)
 8. [D][ ] Complete client code review (by: 2025-09-08T09:00)
 9. [E][ ] Board meeting (from: 2025-09-05T09:00 to: 2025-09-05T11:00)
 10. [E][X] Client presentation (from: 2025-09-06T14:00 to: 2025-09-06T15:30)
+11. [T][ ] something else
