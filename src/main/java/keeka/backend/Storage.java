@@ -37,6 +37,10 @@ public class Storage {
      * @throws IOException If an error occurs during file writing operations.
      */
     public void saveTask(Task task, int taskNumber) throws IOException {
+
+        assert task != null : "Task to save must not be null";
+        assert taskNumber > 0 : "Task number must be positive";
+
         try (FileWriter writer = new FileWriter(filePath, true)) {
             writer.write(taskNumber + ". " + task.toString() + "\n");
         }
@@ -50,6 +54,9 @@ public class Storage {
      * @throws IOException If an error occurs during file writing operations.
      */
     public void updateAllTasks(List<Task> tasks) throws IOException {
+
+        assert tasks != null : "Task list must not be null";
+
         try (FileWriter writer = new FileWriter(filePath, false)) {
             for (int i = 0; i < tasks.size(); i++) {
                 writer.write((i + 1) + ". " + tasks.get(i).toString() + "\n");
@@ -65,12 +72,17 @@ public class Storage {
      * @throws IOException If an error occurs during file reading operations.
      */
     public List<String> loadSaveContents() throws IOException {
+
+        File file = new File(filePath);
+        assert file.exists() : "Storage file should exist before loading contents";
+
         List<String> contents = new ArrayList<>();
         try (Scanner scanner = new Scanner(new File(filePath))) {
             while (scanner.hasNextLine()) {
                 contents.add(scanner.nextLine());
             }
         }
+
         return contents;
     }
 
@@ -87,6 +99,7 @@ public class Storage {
                 parentDir.mkdirs();
             }
             file.createNewFile();
+            assert file.exists() : "Storage file should exist after creation";
         } catch (IOException e) {
             System.err.println("Failed to create storage file: " + e.getMessage());
         }
