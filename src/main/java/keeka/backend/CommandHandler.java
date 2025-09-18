@@ -40,6 +40,9 @@ public class CommandHandler {
      * @param input The todo task description provided by the user.
      */
     public void handleTodoCommand(String input) {
+
+        assert input != null : "Input for the todo command should not be null";
+
         if (input.trim().isEmpty()) {
             ui.showError("Invalid task invocation!");
             return;
@@ -62,6 +65,9 @@ public class CommandHandler {
      * @param input The deadline command string containing description and due date.
      */
     public void handleDeadlineCommand(String input) {
+
+        assert input != null : "Input for the deadline command should not be null";
+
         if (input.trim().isEmpty() || !input.contains("/by")) {
             ui.showError("Invalid task invocation!");
             return;
@@ -94,6 +100,9 @@ public class CommandHandler {
      * @param input The event command string containing description, start time, and end time.
      */
     public void handleEventCommand(String input) {
+
+        assert input != null : "Input for the event command should not be null";
+
         if (input.trim().isEmpty() || !input.contains("/from") || !input.contains("/to")) {
             ui.showError("Invalid task invocation!");
             return;
@@ -126,6 +135,9 @@ public class CommandHandler {
      * @param input The mark command containing the task index to be marked.
      */
     public void handleMarkCommand(String input) {
+
+        assert input != null : "Input for the mark command should not be null";
+
         try {
             int index = Integer.parseInt(input.split(" ")[1]) - 1;
             Task task = taskList.getTask(index);
@@ -148,6 +160,9 @@ public class CommandHandler {
      * @param input The unmark command containing the task index to be unmarked.
      */
     public void handleUnmarkCommand(String input) {
+
+        assert input != null : "Input for the unmark command should not be null";
+
         try {
             int index = Integer.parseInt(input.split(" ")[1]) - 1;
             Task task = taskList.getTask(index);
@@ -170,6 +185,9 @@ public class CommandHandler {
      * @param input The delete command containing the task index to be removed.
      */
     public void handleDeleteCommand(String input) {
+
+        assert input != null : "Input for the delete command should not be null";
+
         try {
             int index = Integer.parseInt(input.split(" ")[1]) - 1;
             Task task = taskList.getTask(index);
@@ -192,6 +210,9 @@ public class CommandHandler {
      * @param input The find command containing the search keyword.
      */
     public void handleFindCommand(String input) {
+
+        assert input != null : "Input for the find command should not be null";
+
         try {
             String keyword = input.split(" ", 2)[1];
             List<Task> foundTasks = taskList.findTasks(keyword);
@@ -216,6 +237,9 @@ public class CommandHandler {
      * @param input The update command containing task index, field type, and new value.
      */
     public void handleUpdateCommand(String input) {
+
+        assert input != null : "Input for the update command should not be null";
+
         try {
             Parser.UpdateInput updateInput = parser.parseUpdateInput(input);
             Task currentTask = taskList.getTask(updateInput.getTaskIndex());
@@ -243,6 +267,10 @@ public class CommandHandler {
      * @throws IllegalArgumentException If the field type is invalid for the task type.
      */
     private Task createUpdatedTask(Task currentTask, Parser.UpdateInput updateInput) {
+
+        assert currentTask != null : "Current task should not be null";
+        assert updateInput != null : "Update input should not be null";
+
         String fieldType = updateInput.getFieldType();
         String newValue = updateInput.getNewValue();
         boolean isDone = currentTask.isDone();
