@@ -9,7 +9,6 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import keeka.backend.*;
-import keeka.tasks.Task;
 
 import java.util.Objects;
 
@@ -27,8 +26,8 @@ public class MainWindow extends AnchorPane {
     private Button sendButton;
 
     private Keeka keeka;
-    private Image userImage = new Image(this.getClass().getResourceAsStream("/images/DaUser.png"));
-    private Image dukeImage = new Image(this.getClass().getResourceAsStream("/images/DaDuke.png"));
+    private Image userImage = new Image(Objects.requireNonNull(this.getClass().getResourceAsStream("/images/DaUser.png")));
+    private Image dukeImage = new Image(Objects.requireNonNull(this.getClass().getResourceAsStream("/images/DaDuke.png")));
     
     // Core components using new architecture
     private TaskList taskList;

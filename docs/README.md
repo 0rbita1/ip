@@ -1,6 +1,6 @@
 # Keeka User Guide
 
-// Product screenshot goes here
+![Ui.png](Ui.png)
 
 Keeka is a simple, interactive command-line task manager. It helps you organize your todos, deadlines, and events, mark tasks as done, search, update, and more—all from your terminal.
 
